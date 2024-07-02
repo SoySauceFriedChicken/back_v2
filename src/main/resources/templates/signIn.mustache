@@ -1,0 +1,35 @@
+
+
+<html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport"
+                content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+            <title>Document</title>
+        </head>
+        <body>
+            <script>
+                interface Props{
+                    titleL string;
+                    placeholder: string;
+                    type: "text" | "password"
+                    value: string;
+                    isErrorMessage:boolean;
+                    buttonTitle?:string;
+                    onChange: (event: ChangeEvent<HTMLInputElement>) -> void;
+                    onKeydown?: (event: KeyboardEvent<HTMLInputElemnt>) => void;
+                    onButtonClick?: () => void;
+                }
+            </script>
+            <h1>로그인</h1>
+            <div class='input-box'>
+                <div class='input-box-title'>{아이디}</div>
+                <div class='input-box-content'>
+                    <input class='input-box-input'/>
+                    <div class='input-box-button'>{중복확인}</div>
+                </div>
+                <div class='input-box-message-error'>{사용가능한 아이디입니다.}</div>
+            </div>
+        </body>
+</html>
