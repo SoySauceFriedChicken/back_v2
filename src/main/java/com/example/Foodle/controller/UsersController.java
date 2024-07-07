@@ -10,12 +10,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 // import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Foodle.dto.request.user.NewUserDto;
 import com.example.Foodle.entity.UsersEntity;
 import com.example.Foodle.service.UsersService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -37,6 +41,22 @@ public class UsersController {
     public List<UsersEntity> getuserprofile(@RequestParam int uid) throws ExecutionException, InterruptedException {
         return usersService.findByUid(uid);
     }
+
+    @PostMapping("/create")
+    public String createUser(@RequestBody @Valid NewUserDto newUserDto) {
+        System.out.println(newUserDto.toString());
+
+        UsersEntity user = newUserDto.toEntity();
+        try {
+            usersService.saveUser(user);
+            return "User created successfully";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error creating user";
+        }
+        
+    }
+    
     
 
     // @GetMapping("/loginSuccess")

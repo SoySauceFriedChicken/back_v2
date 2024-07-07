@@ -33,4 +33,9 @@ public class FriendController {
         return friendService.getFriendsByUid(uid);
         
     }
+
+    // @GetMapping("/test")
+    // public FriendEntity getFriend(@RequestParam int uid)  throws ExecutionException, InterruptedException {
+    //     return friendService.getFriendWithUser(uid);
+    // }
 }

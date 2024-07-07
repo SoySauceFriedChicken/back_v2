@@ -22,11 +22,32 @@ import lombok.ToString;
 @Setter
 @ToString
 public class UsersEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int uid;
     private String name;
+    private String nickName;
     @ElementCollection
     @CollectionTable(name = "placeList", joinColumns = @JoinColumn(name = "pid"))
     @Column(name = "Place_id")
     private List<Integer> placeList;
-    private String icon;
+    private String profileImage;
+
+    public UsersEntity(int uid, String name, String nickName, String profileImage) {
+        this.uid = uid;
+        this.name = name;
+        this.nickName = nickName;
+        this.profileImage = profileImage;
+    }
+
+    @Override
+    public String toString() {
+        return "UsersEntity{" +
+                "uid=" + uid +
+                ", name='" + name + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", placeList=" + placeList +
+                ", profileImage='" + profileImage + '\'' +
+                '}';
+    }
 }

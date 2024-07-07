@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@types/geojson": "^7946.0.14",
+    "geojson": "^0.5.0",
+    "geojson-parser-js": "^1.0.13",
+    "http-proxy-middleware": "^3.0.0"
+  }
+}

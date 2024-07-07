@@ -19,7 +19,7 @@ public class UsersService {
     @Autowired
     private UsersDao usersDao;
 
-    private static final String COLLECTION_NAME = "users";
+    private static final String COLLECTION_NAME = "Users";
 
     private Firestore getFirestore() {
         return FirestoreClient.getFirestore();
@@ -41,6 +41,20 @@ public class UsersService {
             meetingsByName.add(document.toObject(UsersEntity.class));
         }
         return null;
+    }
+
+    public void saveUser(UsersEntity user) {
+        Firestore db = FirestoreClient.getFirestore();
+        DocumentReference newDocRef = db.collection(COLLECTION_NAME).document(); // 자동 생성된 ID를 사용
+        ApiFuture<WriteResult> collectionsApiFuture = newDocRef.set(user);
+
+        try {
+            WriteResult result = collectionsApiFuture.get();
+            System.out.println("Update time : " + result.getUpdateTime());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            // 예외 처리를 추가로 하고 싶다면 여기에 작성
+        }
     }
 
 }

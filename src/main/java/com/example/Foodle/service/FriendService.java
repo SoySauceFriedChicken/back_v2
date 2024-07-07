@@ -3,6 +3,7 @@ package com.example.Foodle.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +11,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.Foodle.dao.FriendDao;
 import com.example.Foodle.entity.FriendEntity;
+import com.example.Foodle.entity.UsersEntity;
+// import com.example.Foodle.repository.FriendRepository;
+// import com.example.Foodle.repository.UsersRepository;
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.cloud.firestore.*;
 
@@ -25,6 +25,7 @@ public class FriendService {
     private FriendDao friendDao;
 
     private static final String COLLECTION_NAME = "Friend";
+    
 
     private Firestore getFirestore() {
         return FirestoreClient.getFirestore();
@@ -43,4 +44,21 @@ public class FriendService {
         }
         return friendsByName;
     }
+
+    // @Autowired
+    // private FriendRepository friendRepository;
+
+    // @Autowired
+    // private UsersRepository usersRepository;
+
+    // public FriendEntity getFriendWithUser(int uid) {
+    //     Optional<FriendEntity> friendOpt = friendRepository.findById(uid);
+    //     if (friendOpt.isPresent()) {
+    //         FriendEntity friend = friendOpt.get();
+    //         Optional<UsersEntity> userOpt = usersRepository.findById(friend.getFid());
+    //         userOpt.ifPresent(friend::setUser);
+    //         return friend;
+    //     }
+    //     return null;
+    // }
 }

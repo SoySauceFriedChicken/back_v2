@@ -1,0 +1,14 @@
+18:06:51.290 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+18:06:51.354 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+18:06:54.913 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - foodle-29946-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 51ms, init: 0ms
+18:06:54.936 [NamespaceSystem-blocking-namespace-operation-dispatcher-6] INFO com.firebase.core.namespace.StateManager - Namespace foodle-29946-default-rtdb status Active to Active
+18:07:41.239 [FirebaseWorkerPool-1-4] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
+namespace foodle-29946, but the emulator is configured for foodle-29946-default-rtdb. To 
+opt-out of single project mode add/set the singleProjectMode: false property in 
+the firebase.json emulators config. 
+18:07:41.249 [NamespaceSystem-akka.actor.default-dispatcher-8] INFO com.firebase.core.namespace.NamespaceActor - foodle-29946 successfully activated FBKV (SurveyIdle(0)) wait: 6ms, init: 0ms
+00:07:47.294 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+00:07:47.302 [NamespaceSystem-akka.actor.default-dispatcher-15] INFO com.firebase.core.namespace.Terminator$Terminator - 2 actors left to terminate: foodle-29946-default-rtdb, foodle-29946
+00:07:47.305 [NamespaceSystem-akka.actor.default-dispatcher-16] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for foodle-29946
+00:07:47.305 [NamespaceSystem-akka.actor.default-dispatcher-15] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for foodle-29946-default-rtdb
+00:07:47.308 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.

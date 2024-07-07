@@ -23,6 +23,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+// import org.springframework.data.geo.*;
+// import org.springframework.core.convert.converter.Converter;
+// import org.springframework.data.convert.WritingConverter;
+// import org.springframework.data.convert.ReadingConverter;
+
 @Entity
 @ToString
 @Getter
@@ -30,6 +35,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlaceEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int pid;
@@ -48,8 +54,25 @@ public class PlaceEntity {
     // @CollectionTable(name = "coordinates", joinColumns = @JoinColumn(name = "location_id"))
     // @Column(name = "address")
     // private List<Double> address = new ArrayList<>();
+    // @ElementCollection
+    // @CollectionTable(name = "address", joinColumns = @JoinColumn(name = "pid"))
+    // @MapKeyColumn(name = "type")
+    // @Column(name = "value")
+    // private Map<String, String> address = new HashMap<>();
+
+    
+    
     private double latitude;
     private double longitude;
+
+    // static <INSTANCE> List<Converter<?, ?>> getConvertersToRegister() {
+    //     return [
+    //         GeoJSONDBObjectToPointConverter.INSTANCE,
+    //         GeoJSONDBObjectToPolygonConverter.INSTANCE,
+    //         GeoJSONPointToDBObjectConverter.INSTANCE,
+    //         GeoJSONPolygonToDBObjectConverter.INSTANCE
+    //     ]
+    // }
 
     
     @ElementCollection
