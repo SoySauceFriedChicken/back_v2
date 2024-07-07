@@ -35,18 +35,21 @@ public class UsersDao {
         return list;
     }
 
-    public List<UsersEntity> findByUid(int uid) throws InterruptedException, ExecutionException {
+    public UsersEntity findByUid(int uid) throws InterruptedException, ExecutionException {
         Firestore firestore = FirestoreClient.getFirestore();
         CollectionReference users = firestore.collection(COLLECTION_NAME);
         Query query = users.whereEqualTo("uid", uid);
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
         List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
-
-        List<UsersEntity> user = new ArrayList<>();
-        for (QueryDocumentSnapshot document : documents) {
-            user.add(document.toObject(UsersEntity.class));
+    
+        if (!documents.isEmpty()) {
+            log.info("User found: " + documents.get(0).toObject(UsersEntity.class));
+            return documents.get(0).toObject(UsersEntity.class);
+        } else {
+            log.info("User not found");
+            return null; // 또는 예외를 던지거나 원하는 로직을 추가
         }
-        return user;
     }
+    
 
 }

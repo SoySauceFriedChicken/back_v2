@@ -15,6 +15,10 @@ import jakarta.persistence.Transient;
 import java.util.Date;
 import java.util.List;
 
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.Firestore;
+import com.google.firebase.cloud.FirestoreClient;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,15 +36,37 @@ public class FriendEntity {
     @Column(length = 100, nullable = false)
     private Boolean like;
     private int fid;
-    
+
     @Transient // 이 필드는 데이터베이스에 매핑되지 않습니다.
+    private DocumentReference userReference;
+
+    @Transient
     private UsersEntity user;
 
-    // Optional: fetch user data on demand
-    @PostLoad
-    public void fetchUser() {
-        // Implement logic to fetch the UsersEntity based on fid
-        // This will typically involve calling a service to get the user by fid
+    public void setUserReference(DocumentReference userReference) {
+        this.userReference = userReference;
     }
+
+    public DocumentReference getUserReference() {
+        return userReference;
+    }
+
+    public UsersEntity getUser() {
+        if (user == null && userReference != null) {
+            // Firestore에서 user 데이터를 가져옵니다.
+            Firestore db = FirestoreClient.getFirestore();
+            try {
+                user = userReference.get().get().toObject(UsersEntity.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return user;
+    }
+
+    public void setUser(UsersEntity user) {
+        this.user = user;
+    }
+
 
 }

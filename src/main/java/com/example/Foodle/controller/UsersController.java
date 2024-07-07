@@ -41,7 +41,7 @@ public class UsersController {
     }
 
     @GetMapping("/profile")
-    public List<UsersEntity> getuserprofile(@RequestParam int uid) throws ExecutionException, InterruptedException {
+    public UsersEntity getuserprofile(@RequestParam int uid) throws ExecutionException, InterruptedException {
         return usersService.findByUid(uid);
     }
 

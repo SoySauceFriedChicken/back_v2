@@ -23,7 +23,7 @@ public class UsersServiceImplement extends UsersService {
     }
 
     @Override // Add the @Override annotation
-    public List<UsersEntity> findByUid(int uid) throws ExecutionException, InterruptedException {
+    public UsersEntity findByUid(int uid) throws ExecutionException, InterruptedException {
         return usersDao.findByUid(uid);
     }
 }

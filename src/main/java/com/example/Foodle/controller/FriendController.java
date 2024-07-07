@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Foodle.dto.request.friend.FriendDto;
 import com.example.Foodle.entity.FriendEntity;
 import com.example.Foodle.service.FriendService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -29,9 +31,14 @@ public class FriendController {
     }
 
     @GetMapping("/byUid")
-    public List<FriendEntity> getFriendsByUid(@RequestParam int uid) throws ExecutionException, InterruptedException {
-        return friendService.getFriendsByUid(uid);
-        
+    public ResponseEntity getFriendsByUid(@RequestParam int uid) throws ExecutionException, InterruptedException {
+        try {
+            List<FriendDto> friends = friendService.getFriendsWithUserDetails(uid);
+            return ResponseEntity.ok(friends);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
 
     // @GetMapping("/test")
