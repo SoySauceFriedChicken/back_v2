@@ -37,35 +37,42 @@ public class FriendEntity {
     private Boolean like;
     private int fid;
 
-    @Transient // 이 필드는 데이터베이스에 매핑되지 않습니다.
-    private DocumentReference userReference;
+    // @Transient // 이 필드는 데이터베이스에 매핑되지 않습니다.
+    // private DocumentReference userReference;
 
-    @Transient
-    private UsersEntity user;
+    // @Transient
+    // private UsersEntity user;
 
-    public void setUserReference(DocumentReference userReference) {
-        this.userReference = userReference;
-    }
+    // public void setUserReference(DocumentReference userReference) {
+    //     this.userReference = userReference;
+    // }
 
-    public DocumentReference getUserReference() {
-        return userReference;
-    }
+    // public DocumentReference getUserReference() {
+    //     return userReference;
+    // }
 
-    public UsersEntity getUser() {
-        if (user == null && userReference != null) {
-            // Firestore에서 user 데이터를 가져옵니다.
-            Firestore db = FirestoreClient.getFirestore();
-            try {
-                user = userReference.get().get().toObject(UsersEntity.class);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return user;
-    }
+    // public UsersEntity getUser() {
+    //     if (user == null && userReference != null) {
+    //         // Firestore에서 user 데이터를 가져옵니다.
+    //         Firestore db = FirestoreClient.getFirestore();
+    //         try {
+    //             user = userReference.get().get().toObject(UsersEntity.class);
+    //         } catch (Exception e) {
+    //             e.printStackTrace();
+    //         }
+    //     }
+    //     return user;
+    // }
 
-    public void setUser(UsersEntity user) {
-        this.user = user;
+    // public void setUser(UsersEntity user) {
+    //     this.user = user;
+    // }
+
+    public FriendEntity(int uid, boolean like, int fid) {
+        //TODO Auto-generated constructor stub
+        this.uid = uid;
+        this.like = like;
+        this.fid = fid;
     }
 
 

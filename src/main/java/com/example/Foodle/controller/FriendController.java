@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,28 @@ public class FriendController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
+        }
+    }
+
+    @PostMapping("/Create")
+    public String createFriend(@RequestParam int uid, @RequestParam int fid)  throws ExecutionException, InterruptedException {
+        try {
+            friendService.createFriend(uid, fid);
+            return "Friend created successfully";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error creating friend";
+        }
+    }
+
+    @PostMapping("/Update")
+    public String updateFriend(@RequestParam int uid, @RequestParam int fid)  throws ExecutionException, InterruptedException {
+        try {
+            friendService.updateFriend(uid, fid);
+            return "Friend updated successfully";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error updating friend";
         }
     }
 

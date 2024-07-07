@@ -91,6 +91,53 @@ public class FriendService {
     // @Autowired
     // private FriendRepository friendRepository;
 
+    public void createFriend(int uid, int fid) {
+        Firestore db = getFirestore();
+        // Create references for each friend relationship
+        DocumentReference friendRef1 = db.collection(COLLECTION_NAME).document();
+        DocumentReference friendRef2 = db.collection(COLLECTION_NAME).document();
+
+        FriendEntity friendEntity1 = new FriendEntity(uid, false, fid);
+        FriendEntity friendEntity2 = new FriendEntity(fid, false, uid);
+
+        // Create two separate futures for each write operation
+        ApiFuture<WriteResult> future1 = friendRef1.set(friendEntity1);
+        ApiFuture<WriteResult> future2 = friendRef2.set(friendEntity2);
+
+        try {
+            // Wait for both operations to complete
+            WriteResult result1 = future1.get();
+            WriteResult result2 = future2.get();
+
+            // Log the update times (optional)
+            System.out.println("Update time for friendRef1: " + result1.getUpdateTime());
+            System.out.println("Update time for friendRef2: " + result2.getUpdateTime());
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateFriend(int uid, int fid) throws InterruptedException, ExecutionException {
+        Firestore db = FirestoreClient.getFirestore();
+        DocumentReference friendRef = db.collection(COLLECTION_NAME)
+                .whereEqualTo("uid", uid)
+                .whereEqualTo("fid", fid)
+                .limit(1)  // Limit to one document (assuming uid, fid combination is unique)
+                .get()
+                .get()
+                .getDocuments()
+                .get(0).getReference();
+
+        // Fetch the current value of 'like' field
+        ApiFuture<DocumentSnapshot> future = friendRef.get();
+        DocumentSnapshot document = future.get();
+        boolean currentLikeValue = document.getBoolean("like");
+
+        // Update the 'like' field with its negation
+        friendRef.update("like", !currentLikeValue);
+    }
+
     // @Autowired
     // private UsersRepository usersRepository;
 
