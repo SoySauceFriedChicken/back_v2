@@ -7,16 +7,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.example.Foodle.dto.request.meeting.MeetingDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.UsersEntity;
 import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 @Slf4j
 public class MeetingDao {
+    private MeetingDto meetingDto;
+
     public static final String COLLECTION_NAME = "Meet";
     public static final String USERS_COLLECTION_NAME = "Users";
     public static final String PLACE_COLLECTION_NAME = "Place";
@@ -111,5 +117,55 @@ public class MeetingDao {
         }
 
         return meetingDtos;
+    }
+
+    public void saveMeet(MeetEntity meetEntity) {
+        Firestore db = FirestoreClient.getFirestore();
+        db.collection(COLLECTION_NAME).document().set(meetEntity);
+
+
+    }
+
+    public void updateMeet(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
+        Firestore db = FirestoreClient.getFirestore();
+
+        // Null 체크
+        if (meetEntity == null) {
+            throw new IllegalArgumentException("MeetingDto is null");
+        }
+
+        // MeetDto에서 mid 가져오기
+        int mid = meetEntity.getMid();
+
+        // MeetEntity로 변환
+        MeetEntity newMeetEntity = new MeetEntity();
+        newMeetEntity.setMid(meetEntity.getMid());
+        newMeetEntity.setUid(meetEntity.getUid());
+        newMeetEntity.setName(meetEntity.getName());
+        newMeetEntity.setDate(meetEntity.getDate());
+        newMeetEntity.setMember(meetEntity.getMember());
+        newMeetEntity.setLists(meetEntity.getLists());
+        // lists와 joiners는 필요에 따라 meetEntity에 맞게 설정
+
+        log.info("Updating meeting with mid " + mid);
+        log.info("New meeting data: " + newMeetEntity);
+
+        // Firestore에서 업데이트할 문서 가져오기
+        CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
+        ApiFuture<QuerySnapshot> query = meetingsRef.whereEqualTo("mid", mid).get();
+        QuerySnapshot querySnapshot = query.get();
+        
+        // 검색된 문서가 있다면 업데이트 수행
+        if (!querySnapshot.isEmpty()) {
+            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                ApiFuture<WriteResult> updateFuture = document.getReference().set(meetEntity);
+                // 업데이트가 완료될 때까지 대기
+                updateFuture.get();
+            }
+        } else {
+            throw new RuntimeException("Document with mid " + mid + " not found");
+        }
+
+        System.out.println("Meeting with mid " + mid + " updated successfully!");
     }
 }

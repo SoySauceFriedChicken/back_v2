@@ -38,4 +38,12 @@ public class MeetingService {
         return meetingDao.getMeetingsByMid(mid);
     }
 
+    public void saveMeet(MeetEntity meet) {
+        meetingDao.saveMeet(meet);
+    }
+
+    public void updateMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
+        meetingDao.updateMeet(meet);
+    }
+
 }

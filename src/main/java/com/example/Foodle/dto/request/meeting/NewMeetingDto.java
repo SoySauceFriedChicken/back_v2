@@ -1,0 +1,54 @@
+package com.example.Foodle.dto.request.meeting;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+
+import com.example.Foodle.entity.MeetEntity;
+import com.example.Foodle.entity.UsersEntity;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@ToString
+@Slf4j
+public class NewMeetingDto {
+    private final int mid;
+    private final int uid;
+    private final String name;
+    private final Date date;
+
+    private final List<UsersEntity> joiners;
+    private final List<Map<String, Object>> placeList;
+
+
+    public MeetEntity toEntity() {
+        List<Integer> joinersIds = new ArrayList<>();
+        for (UsersEntity user : joiners) {
+            joinersIds.add(user.getUid());
+        }
+
+        List<Map<String, Object>> lists = new ArrayList<>();
+        if (placeList != null) {
+            for (Map<String, Object> placeEntry : placeList) {
+                Map<String, Object> place = (Map<String, Object>) placeEntry.get("place");
+                Map<String, Object> newPlace = new HashMap<>();
+                newPlace.put("place", place.get("pid"));
+                // log.info("place.get(\"pid\") : " + place.get("pid"));
+                newPlace.put("time", placeEntry.get("time"));
+                lists.add(newPlace);
+            }
+        }
+        return new MeetEntity(mid, uid, name, date, joinersIds, lists);
+    }
+}
