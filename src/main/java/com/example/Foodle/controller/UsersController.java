@@ -16,14 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Foodle.dto.request.user.NewUserDto;
+import com.example.Foodle.dto.request.user.UpdateUserDto;
 import com.example.Foodle.entity.UsersEntity;
 import com.example.Foodle.service.UsersService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -44,7 +47,8 @@ public class UsersController {
 
     @PostMapping("/create")
     public String createUser(@RequestBody @Valid NewUserDto newUserDto) {
-        System.out.println(newUserDto.toString());
+        // System.out.println(newUserDto.toString());
+        log.info(newUserDto.toString());
 
         UsersEntity user = newUserDto.toEntity();
         try {
@@ -56,6 +60,24 @@ public class UsersController {
         }
         
     }
+
+    @PostMapping("/update")
+    public String updateUser(@RequestBody @Valid UpdateUserDto updateUserDto) {
+        // System.out.println(updateUserDto.toString());
+        log.info(updateUserDto.toString());
+
+        UsersEntity user = updateUserDto.toEntity();
+        try {
+            usersService.updateUser(user);
+            return "User updated successfully";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error updating user";
+        }
+        
+    }
+
+
     
     
 

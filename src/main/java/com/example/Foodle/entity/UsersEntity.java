@@ -39,15 +39,4 @@ public class UsersEntity {
         this.nickName = nickName;
         this.profileImage = profileImage;
     }
-
-    @Override
-    public String toString() {
-        return "UsersEntity{" +
-                "uid=" + uid +
-                ", name='" + name + '\'' +
-                ", nickName='" + nickName + '\'' +
-                ", placeList=" + placeList +
-                ", profileImage='" + profileImage + '\'' +
-                '}';
-    }
 }
