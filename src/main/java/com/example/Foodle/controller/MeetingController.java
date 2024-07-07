@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Foodle.dto.request.meeting.MeetingDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.UsersEntity;
 import com.example.Foodle.service.MeetingService;
@@ -29,17 +30,17 @@ public class MeetingController {
     private MeetingService meetingService;
 
     @GetMapping
-    public List<MeetEntity> getAllMeetings() throws ExecutionException, InterruptedException {
+    public List<MeetingDto> getAllMeetings() throws ExecutionException, InterruptedException {
         return meetingService.getAllMeetings();
     }
 
     @GetMapping("/byUid")
-    public List<MeetEntity> getMeetingsByName(@RequestParam int uid) throws ExecutionException, InterruptedException {
+    public List<MeetingDto> getMeetingsByName(@RequestParam int uid) throws ExecutionException, InterruptedException {
         return meetingService.getMeetingsByUid(uid);
     }
 
     @GetMapping("/byMid")
-    public List<MeetEntity> getMethodName(@RequestParam int mid) throws ExecutionException, InterruptedException {
+    public List<MeetingDto> getMethodName(@RequestParam int mid) throws ExecutionException, InterruptedException {
         return meetingService.getMeetingsByMid(mid);
     }
     
