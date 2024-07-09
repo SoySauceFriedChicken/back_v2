@@ -29,7 +29,7 @@ public class MeetingServiceImplement extends MeetingService {
     }
 
     @Override // Add the @Override annotation
-    public List<MeetingDto> getMeetingsByMid(int mid) throws ExecutionException, InterruptedException {
+    public MeetingDto getMeetingsByMid(int mid) throws ExecutionException, InterruptedException {
         return meetingDao.getMeetingsByMid(mid);
     }
 }

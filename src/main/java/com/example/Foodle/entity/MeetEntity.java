@@ -58,6 +58,32 @@ public class MeetEntity {
     @Column(name = "time")
     private List<Map<String, Object>> lists = new ArrayList<>();
 
+    // placeList를 업데이트하는 메서드
+    public void updatePlaceList(Map<String, Object> meetplace) {
+        Map<String, Object> newPlace = (Map<String, Object>) meetplace.get("place");
+        Object newPid = newPlace.get("pid");
+
+        boolean updated = false;
+
+        for (Map<String, Object> existingEntry : lists) {
+            Map<String, Object> existingPlace = (Map<String, Object>) existingEntry.get("place");
+            Object existingPid = existingPlace.get("pid");
+
+            if (newPid.equals(existingPid)) {
+                // 기존 엔트리를 업데이트
+                existingPlace.putAll(newPlace);
+                existingEntry.put("time", meetplace.get("time"));
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            // 동일한 pid를 가진 엔트리가 없으면 새로 추가
+            lists.add(meetplace);
+        }
+    }
+
     // private Map<Integer, Date> placeList = new HashMap<>();
     
     // // Convert placeList keys to Integer type

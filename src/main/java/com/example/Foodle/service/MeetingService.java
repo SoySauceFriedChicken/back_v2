@@ -34,7 +34,7 @@ public class MeetingService {
         return meetingDao.getMeetingsByUid(uid);
     }
 
-    public List<MeetingDto> getMeetingsByMid(int mid) throws ExecutionException, InterruptedException {
+    public MeetingDto getMeetingsByMid(int mid) throws ExecutionException, InterruptedException {
         return meetingDao.getMeetingsByMid(mid);
     }
 
@@ -44,6 +44,10 @@ public class MeetingService {
 
     public void updateMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
         meetingDao.updateMeet(meet);
+    }
+
+    public void addPlaceList(int mid, Map<String, Object> meetplace) throws InterruptedException, ExecutionException {
+        meetingDao.addPlaceList(mid, meetplace);
     }
 
 }

@@ -1,9 +1,11 @@
 package com.example.Foodle.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -46,12 +48,12 @@ public class MeetingController {
     }
 
     @GetMapping("/byMid")
-    public List<MeetingDto> getMethodName(@RequestParam int mid) throws ExecutionException, InterruptedException {
+    public MeetingDto getMeetingsByMid(@RequestParam int mid) throws ExecutionException, InterruptedException {
         return meetingService.getMeetingsByMid(mid);
     }
     
     @PostMapping("/create")
-    public String postMethodName(@RequestBody @Valid NewMeetingDto newMeet) {
+    public String createMeeting(@RequestBody @Valid NewMeetingDto newMeet) {
         MeetEntity meet = newMeet.toEntity();
         try {
             meetingService.saveMeet(meet);
@@ -63,7 +65,7 @@ public class MeetingController {
     }
 
     @PostMapping("/update")
-    public String postMethodName(@RequestBody @Valid UpdateMeetingDto entity) {
+    public String updateMeeting(@RequestBody @Valid UpdateMeetingDto entity) {
         MeetEntity meet = entity.toEntity();
         try {
             meetingService.updateMeet(meet);
@@ -73,6 +75,44 @@ public class MeetingController {
             return "Error creating user";
         }
     }
+
+    @PostMapping("/update/addPlace")
+    public ResponseEntity<String>addPlaceList(@RequestBody Map<String, Object> request) {
+        try {
+            int mid = (int) request.get("mid");
+            Map<String, Object> meetplace = (Map<String, Object>) request.get("meetplace");
+
+            // 서비스 메서드 호출
+            meetingService.addPlaceList(mid, meetplace);
+
+            return ResponseEntity.ok("Place list updated successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating place list");
+        }
+    }
+
+    @PostMapping("/update/updatePlace")
+    public String updatePlaceFromMeeting(@RequestBody String entity) {
+        return entity;
+
+    }
+
+    @PostMapping("/update/deletePlace")
+    public String deletePlaceFromMeeting(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
+    
+    @PostMapping("/update/addUser")
+    public String addUserToMeeting(@RequestBody String entity) {
+        return entity;
+        
+    }
+
+
     
     
 

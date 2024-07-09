@@ -46,5 +46,30 @@ public class MeetingDto {
         this.placeList = placeList != null ? placeList : new ArrayList<>();
     }
 
+    // placeList를 업데이트하는 메서드
+    public void updatePlaceList(Map<String, Object> meetplace) {
+        Map<String, Object> newPlace = (Map<String, Object>) meetplace.get("place");
+        Object newPid = newPlace.get("pid");
+
+        boolean updated = false;
+
+        for (Map<String, Object> existingEntry : placeList) {
+            Map<String, Object> existingPlace = (Map<String, Object>) existingEntry.get("place");
+            Object existingPid = existingPlace.get("pid");
+
+            if (newPid.equals(existingPid)) {
+                // 기존 엔트리를 업데이트
+                existingPlace.putAll(newPlace);
+                existingEntry.put("time", meetplace.get("time"));
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            // 동일한 pid를 가진 엔트리가 없으면 새로 추가
+            placeList.add(meetplace);
+        }
+    }
     
 }
