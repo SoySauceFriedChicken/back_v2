@@ -46,7 +46,7 @@ public class MeetingService {
         meetingDao.updateMeet(meet);
     }
 
-    public void addPlaceList(String mid, Map<String, Object> meetplace) throws InterruptedException, ExecutionException {
+    public void addPlaceList(String mid, List<Map<String, Object>> meetplace) throws InterruptedException, ExecutionException {
         meetingDao.addPlaceList(mid, meetplace);
     }
 

@@ -81,7 +81,7 @@ public class MeetingController {
     public ResponseEntity<String>addPlaceList(@RequestBody Map<String, Object> request) {
         try {
             String mid = (String) request.get("mid");
-            Map<String, Object> meetplace = (Map<String, Object>) request.get("meetplace");
+            List<Map<String, Object>> meetplace = (List<Map<String, Object>>) request.get("places");
 
             // 서비스 메서드 호출
             meetingService.addPlaceList(mid, meetplace);

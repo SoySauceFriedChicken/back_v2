@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.example.Foodle.dto.request.meeting.MeetingDto;
+import com.example.Foodle.dto.request.place.PlaceDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.PlaceEntity;
 import com.example.Foodle.entity.UsersEntity;
@@ -204,7 +205,7 @@ public class MeetingDao {
         System.out.println("Meeting with mid " + mid + " updated successfully!");
     }
 
-    public void addPlaceList(String mid, Map<String, Object> meetplace) throws InterruptedException, ExecutionException {
+    public void addPlaceList(String mid, List<Map<String, Object>> meetplace) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
         Query query = meetingsRef.whereEqualTo("mid", mid);
@@ -214,19 +215,28 @@ public class MeetingDao {
         if (!documents.isEmpty()) {
             DocumentSnapshot document = documents.get(0);
             MeetEntity meetEntity = document.toObject(MeetEntity.class);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
             List<Map<String, Object>> lists = meetEntity.getLists() != null ? meetEntity.getLists() : new ArrayList<>();
             
             Map<String, Object> newPlace = new HashMap<>();
-                        
-            for(Map<String, Object> list : lists) {
-                Map<String, Object> existingPlace = (Map<String, Object>) list.get("place");
+            for(Map<String, Object> place : meetplace){
+                Object placeObject = place.get("place");
+                if (placeObject instanceof Map) {
+                    Map<String, Object> placeMap = (Map<String, Object>) placeObject;
+                    String pid = (String) placeMap.get("pid");
+                    Object time = place.get("time");
 
-                Object existingPid = existingPlace.get("pid");
-                newPlace.put("place", existingPid);
-                newPlace.put("time", meetplace.get("time"));
-                lists.add(meetplace);
+                    newPlace.put("place", pid);
+                    newPlace.put("time", time.toString());
+
+                    lists.add(newPlace);
+                } else {
+                    // Handle the error appropriately, e.g., log an error message or throw an exception
+                    throw new RuntimeException("Expected a Map<String, Object> but got: " + placeObject.getClass().getName());
+                }
             }
-
+            
             meetEntity.setLists(lists);
             document.getReference().set(meetEntity);
         } else {
