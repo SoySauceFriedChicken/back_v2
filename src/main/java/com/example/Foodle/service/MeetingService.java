@@ -50,4 +50,11 @@ public class MeetingService {
         meetingDao.addPlaceList(mid, meetplace);
     }
 
+    public void updatePlaceList(String mid, List<Map<String, Object>> meetplace) throws InterruptedException, ExecutionException {
+        meetingDao.updatePlaceList(mid, meetplace);
+    }
+    public void deletePlaceList(String mid, List<Map<String, Object>> meetplace) throws InterruptedException, ExecutionException {
+        meetingDao.deletePlaceList(mid, meetplace);
+    }
+
 }

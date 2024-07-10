@@ -94,16 +94,35 @@ public class MeetingController {
     }
 
     @PostMapping("/update/updatePlace")
-    public String updatePlaceFromMeeting(@RequestBody String entity) {
-        return entity;
+    public ResponseEntity<String> updatePlaceFromMeeting(@RequestBody Map<String, Object> request) {
+        try {
+            String mid = (String) request.get("mid");
+            List<Map<String, Object>> meetplace = (List<Map<String, Object>>) request.get("places");
 
+            // 서비스 메서드 호출
+            meetingService.updatePlaceList(mid, meetplace);
+
+            return ResponseEntity.ok("Place list updated successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating place list");
+        }
     }
 
     @PostMapping("/update/deletePlace")
-    public String deletePlaceFromMeeting(@RequestBody String entity) {
-        //TODO: process POST request
-        
-        return entity;
+    public ResponseEntity<String> deletePlaceFromMeeting(@RequestBody Map<String, Object> request) {
+        try {
+            String mid = (String) request.get("mid");
+            List<Map<String, Object>> meetplace = (List<Map<String, Object>>) request.get("places");
+
+            // 서비스 메서드 호출
+            meetingService.deletePlaceList(mid, meetplace);
+
+            return ResponseEntity.ok("Place list updated successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating place list");
+        }
     }
     
     
