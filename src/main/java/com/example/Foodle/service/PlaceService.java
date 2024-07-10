@@ -38,7 +38,7 @@ public class PlaceService {
         }
         return places;
     }
-    public List<PlaceEntity> getPlaceByPid(int uid) throws ExecutionException, InterruptedException {
+    public List<PlaceEntity> getPlaceByPid(String uid) throws ExecutionException, InterruptedException {
         Firestore db = getFirestore();
         CollectionReference meetings = db.collection(COLLECTION_NAME);
         Query query = meetings.whereEqualTo("uid", uid); // Use the correct Query class

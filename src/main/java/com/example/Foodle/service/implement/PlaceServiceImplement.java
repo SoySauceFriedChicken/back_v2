@@ -26,7 +26,7 @@ public class PlaceServiceImplement extends PlaceService {
     }
 
     @Override // Add the @Override annotation
-    public List<PlaceEntity> getPlaceByPid(int pid) throws ExecutionException, InterruptedException {
+    public List<PlaceEntity> getPlaceByPid(String pid) throws ExecutionException, InterruptedException {
         return placeDao.getPlaceByPid(pid);
     }
 }

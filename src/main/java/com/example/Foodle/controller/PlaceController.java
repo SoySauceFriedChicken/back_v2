@@ -37,7 +37,7 @@ public class PlaceController {
     }
 
     @GetMapping("/byPid")
-    public List<PlaceEntity> getMeetingsByName(@RequestParam int pid) throws ExecutionException, InterruptedException {
+    public List<PlaceEntity> getMeetingsByName(@RequestParam String pid) throws ExecutionException, InterruptedException {
         return placeService.getPlaceByPid(pid);
     }
 

@@ -20,7 +20,7 @@ public class FriendServiceImplement extends FriendService {
     private final FriendDao friendDao;
 
     @Override
-    public List<FriendEntity> getFriendsByUid(int uid) throws ExecutionException, InterruptedException {
+    public List<FriendEntity> getFriendsByUid(String uid) throws ExecutionException, InterruptedException {
         return friendDao.getFriendsByUid(uid);
     }
 

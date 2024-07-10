@@ -15,6 +15,7 @@ import jakarta.persistence.Transient;
 import java.util.Date;
 import java.util.List;
 
+import com.example.Foodle.dto.request.friend.FriendDto;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.cloud.FirestoreClient;
@@ -31,11 +32,12 @@ import lombok.ToString;
 public class FriendEntity {
      @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int uid;
+    private String uid;
     
     @Column(length = 100, nullable = false)
     private Boolean like;
-    private int fid;
+    private String fid;
+    private UsersEntity user;
 
     // @Transient // 이 필드는 데이터베이스에 매핑되지 않습니다.
     // private DocumentReference userReference;
@@ -68,11 +70,19 @@ public class FriendEntity {
     //     this.user = user;
     // }
 
-    public FriendEntity(int uid, boolean like, int fid) {
+    public FriendEntity(String uid, boolean like, String fid) {
         //TODO Auto-generated constructor stub
         this.uid = uid;
         this.like = like;
         this.fid = fid;
+    }
+
+    // FriendEntity를 FriendDto로 변환
+    public FriendDto toDto() {
+        FriendDto dto = new FriendDto();
+        dto.setUser(user);
+        dto.setLike(like);
+        return dto;
     }
 
 

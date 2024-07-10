@@ -32,17 +32,17 @@ import lombok.ToString;
 public class PlaceListEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int lid;
+    private String lid;
     
     @Column(length = 100, nullable = false)
-    private int uid;
+    private String uid;
     private String name; // 이름
     private String color; // 색상
 
     @ElementCollection
     @CollectionTable(name = "placeList", joinColumns = @JoinColumn(name = "pid"))
     @Column(name = "Place_id")
-    private List<Integer> pid;
+    private List<String> pid;
 
     // @ElementCollection
     // @CollectionTable(name = "placeList", joinColumns = @JoinColumn(name = "mid"))

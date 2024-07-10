@@ -24,12 +24,12 @@ public class MeetingServiceImplement extends MeetingService {
     }
 
     @Override // Add the @Override annotation
-    public List<MeetingDto> getMeetingsByUid(int uid) throws ExecutionException, InterruptedException {
+    public List<MeetingDto> getMeetingsByUid(String uid) throws ExecutionException, InterruptedException {
         return meetingDao.getMeetingsByUid(uid);
     }
 
     @Override // Add the @Override annotation
-    public MeetingDto getMeetingsByMid(int mid) throws ExecutionException, InterruptedException {
+    public MeetingDto getMeetingsByMid(String mid) throws ExecutionException, InterruptedException {
         return meetingDao.getMeetingsByMid(mid);
     }
 }

@@ -18,7 +18,7 @@ import lombok.ToString;
 public class NewUserDto {
     
     @NotNull
-    private Integer uid;
+    private String uid;
 
     @NotBlank
     private String name;

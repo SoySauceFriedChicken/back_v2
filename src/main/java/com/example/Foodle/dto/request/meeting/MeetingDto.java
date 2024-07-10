@@ -17,33 +17,33 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MeetingDto {
-    private final int mid;
-    private final int uid;
+    private final String mid;
+    private final String uid;
     private final String name;
     private final Date date;
 
     private final List<UsersEntity> joiners;
 
-    private final List<Map<String, Object>> placeList;
+    private final List<Map<String, Object>> places;
     
     // 기본 생성자
     public MeetingDto() {
-        this.mid = 0;
-        this.uid = 0;
+        this.mid = "";
+        this.uid = "";
         this.name = "";
         this.date = null;
         this.joiners = new ArrayList<>();
-        this.placeList = null;
+        this.places = null;
     }
 
     // 생성자
-    public MeetingDto(int mid, int uid, String name, Date date, List<Map<String, Object>> placeList, List<UsersEntity> joiners) {
+    public MeetingDto(String mid, String uid, String name, Date date, List<Map<String, Object>> places, List<UsersEntity> joiners) {
         this.mid = mid;
         this.uid = uid;
         this.name = name;
         this.date = date;
         this.joiners = joiners != null ? joiners : new ArrayList<>();
-        this.placeList = placeList != null ? placeList : new ArrayList<>();
+        this.places = places != null ? places : new ArrayList<>();
     }
 
     // placeList를 업데이트하는 메서드
@@ -53,7 +53,7 @@ public class MeetingDto {
 
         boolean updated = false;
 
-        for (Map<String, Object> existingEntry : placeList) {
+        for (Map<String, Object> existingEntry : places) {
             Map<String, Object> existingPlace = (Map<String, Object>) existingEntry.get("place");
             Object existingPid = existingPlace.get("pid");
 
@@ -68,7 +68,7 @@ public class MeetingDto {
 
         if (!updated) {
             // 동일한 pid를 가진 엔트리가 없으면 새로 추가
-            placeList.add(meetplace);
+            places.add(meetplace);
         }
     }
     

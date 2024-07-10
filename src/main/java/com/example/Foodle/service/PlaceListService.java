@@ -28,7 +28,7 @@ public class PlaceListService {
         return FirestoreClient.getFirestore();
     }
 
-    public List<PlaceListEntity> getUserPlaceLists(int uid) throws ExecutionException, InterruptedException {
+    public List<PlaceListEntity> getUserPlaceLists(String uid) throws ExecutionException, InterruptedException {
         Firestore db = getFirestore();
         CollectionReference placeLists = db.collection(COLLECTION_NAME);
         Query query = placeLists.whereEqualTo("uid", uid); // Use the correct Query class
@@ -41,7 +41,7 @@ public class PlaceListService {
         }
         return userplaceLists;
     }
-    public List<PlaceListEntity> getPlaceListByLid(int lid) throws ExecutionException, InterruptedException {
+    public List<PlaceListEntity> getPlaceListByLid(String lid) throws ExecutionException, InterruptedException {
         Firestore db = getFirestore();
         CollectionReference placeLists = db.collection(COLLECTION_NAME);
         Query query = placeLists.whereEqualTo("lid", lid); // Use the correct Query class

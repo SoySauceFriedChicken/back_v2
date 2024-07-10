@@ -8,7 +8,7 @@ import lombok.ToString;
 @ToString
 @Getter
 public class UpdateUserDto {
-    private Integer uid;
+    private String uid;
     private String name;
     private String nickName;
     private String profileImage;

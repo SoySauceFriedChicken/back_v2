@@ -19,8 +19,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class UpdateMeetingDto {
-    private final int mid;
-    private final int uid;
+    private final String mid;
+    private final String uid;
     private final String name;
     private final Date date;
 
@@ -28,7 +28,7 @@ public class UpdateMeetingDto {
     private final List<Map<String, Object>> placeList;
 
     public MeetEntity toEntity() {
-        List<Integer> joinersIds = new ArrayList<>();
+        List<String> joinersIds = new ArrayList<>();
         for (UsersEntity user : joiners) {
             joinersIds.add(user.getUid());
         }
@@ -44,6 +44,8 @@ public class UpdateMeetingDto {
                 lists.add(newPlace);
             }
         }
-        return new MeetEntity(mid, uid, name, date, joinersIds, lists);
+
+        String newDate = date.toString();
+        return new MeetEntity(mid, uid, name, newDate, joinersIds, lists);
     }
 }

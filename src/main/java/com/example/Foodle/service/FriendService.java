@@ -41,7 +41,7 @@ public class FriendService {
         return FirestoreClient.getFirestore();
     }
 
-    public List<FriendEntity> getFriendsByUid(int uid) throws ExecutionException, InterruptedException {
+    public List<FriendEntity> getFriendsByUid(String uid) throws ExecutionException, InterruptedException {
         Firestore db = getFirestore();
         CollectionReference friends = db.collection(COLLECTION_NAME);
         Query query = friends.whereEqualTo("uid", uid); // Use the correct Query class
@@ -56,7 +56,7 @@ public class FriendService {
     }
 
     // 새로운 메서드
-    public List<FriendDto> getFriendsWithUserDetails(int uid) throws ExecutionException, InterruptedException {
+    public List<FriendDto> getFriendsWithUserDetails(String uid) throws ExecutionException, InterruptedException {
         Firestore db = getFirestore();
         CollectionReference friendsRef = db.collection(COLLECTION_NAME);
         Query query = friendsRef.whereEqualTo("uid", uid);
@@ -65,10 +65,10 @@ public class FriendService {
 
         List<FriendDto> friendsWithUserDetails = new ArrayList<>();
         for (QueryDocumentSnapshot document : documents) {
-            FriendDto friendDto = document.toObject(FriendDto.class);
+            FriendEntity friendEntity = document.toObject(FriendEntity.class);
     
-            log.info("User found: " + friendDto.getUser());
-                Query userRef = db.collection(USERS_COLLECTION_NAME).whereEqualTo("uid", friendDto.getFid());
+            log.info("User found: " + friendEntity.getUid());
+                Query userRef = db.collection(USERS_COLLECTION_NAME).whereEqualTo("uid", friendEntity.getFid());
                 
                 ApiFuture<QuerySnapshot> userSnapshot = userRef.get();
                 QuerySnapshot userDocument = userSnapshot.get();
@@ -77,21 +77,21 @@ public class FriendService {
                 if (!userDocument.isEmpty()) {
                     log.info("User found: " + userDocument.getDocuments().get(0).toObject(UsersEntity.class));
                     UsersEntity userEntity = userDocument.getDocuments().get(0).toObject(UsersEntity.class);
-                    friendDto.setUser(userEntity);
+                    friendEntity.setUser(userEntity);
                 } else{
                     log.info("User not found");
                     
                 }
 
             
-            friendsWithUserDetails.add(friendDto);
+            friendsWithUserDetails.add(friendEntity.toDto());
         }
         return friendsWithUserDetails;
     }
     // @Autowired
     // private FriendRepository friendRepository;
 
-    public void createFriend(int uid, int fid) {
+    public void createFriend(String uid, String fid) {
         Firestore db = getFirestore();
         // Create references for each friend relationship
         DocumentReference friendRef1 = db.collection(COLLECTION_NAME).document();
@@ -118,7 +118,7 @@ public class FriendService {
         }
     }
 
-    public void updateFriend(int uid, int fid) throws InterruptedException, ExecutionException {
+    public void updateFriend(String uid, String fid) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         DocumentReference friendRef = db.collection(COLLECTION_NAME)
                 .whereEqualTo("uid", uid)

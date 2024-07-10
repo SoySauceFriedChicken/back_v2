@@ -16,12 +16,12 @@ import lombok.ToString;
 public class UsersEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int uid;
+    private String uid;
     private String name;
     private String nickName;
     private String profileImage;
 
-    public UsersEntity(int uid, String name, String nickName, String profileImage) {
+    public UsersEntity(String uid, String name, String nickName, String profileImage) {
         this.uid = uid;
         this.name = name;
         this.nickName = nickName;

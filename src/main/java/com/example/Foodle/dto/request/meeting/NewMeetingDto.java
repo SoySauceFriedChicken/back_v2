@@ -23,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 @Slf4j
 public class NewMeetingDto {
-    private final int mid;
-    private final int uid;
+    private final String mid;
+    private final String uid;
     private final String name;
     private final Date date;
 
@@ -33,7 +33,7 @@ public class NewMeetingDto {
 
 
     public MeetEntity toEntity() {
-        List<Integer> joinersIds = new ArrayList<>();
+        List<String> joinersIds = new ArrayList<>();
         for (UsersEntity user : joiners) {
             joinersIds.add(user.getUid());
         }
@@ -49,6 +49,8 @@ public class NewMeetingDto {
                 lists.add(newPlace);
             }
         }
-        return new MeetEntity(mid, uid, name, date, joinersIds, lists);
+
+        String newDate = date.toString();
+        return new MeetEntity(mid, uid, name, newDate, joinersIds, lists);
     }
 }

@@ -35,7 +35,7 @@ public class UsersDao {
         return list;
     }
 
-    public UsersEntity findByUid(int uid) throws InterruptedException, ExecutionException {
+    public UsersEntity findByUid(String uid) throws InterruptedException, ExecutionException {
         Firestore firestore = FirestoreClient.getFirestore();
         CollectionReference users = firestore.collection(COLLECTION_NAME);
         Query query = users.whereEqualTo("uid", uid);

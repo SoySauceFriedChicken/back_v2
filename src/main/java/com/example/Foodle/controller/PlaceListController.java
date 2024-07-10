@@ -27,12 +27,12 @@ public class PlaceListController {
     private PlaceListService placeListService;
 
     @GetMapping("/byUid")
-    public List<PlaceListEntity> getAllMeetings(@RequestParam int uid) throws ExecutionException, InterruptedException {
+    public List<PlaceListEntity> getAllMeetings(@RequestParam String uid) throws ExecutionException, InterruptedException {
         return placeListService.getUserPlaceLists(uid);
     }
 
     @GetMapping("/byLid")
-    public List<PlaceListEntity> getMeetingsByName(@RequestParam int lid) throws ExecutionException, InterruptedException {
+    public List<PlaceListEntity> getMeetingsByName(@RequestParam String lid) throws ExecutionException, InterruptedException {
         return placeListService.getPlaceListByLid(lid);
     }
 }

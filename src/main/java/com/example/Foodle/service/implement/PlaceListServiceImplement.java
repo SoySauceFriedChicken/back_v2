@@ -19,12 +19,12 @@ public class PlaceListServiceImplement extends PlaceListService {
     private final PlaceListDao placeListDao;
 
     @Override
-    public List<PlaceListEntity> getUserPlaceLists(int uid) throws ExecutionException, InterruptedException {
+    public List<PlaceListEntity> getUserPlaceLists(String uid) throws ExecutionException, InterruptedException {
         return placeListDao.getUserPlaceLists(uid);
     }
 
     @Override
-    public List<PlaceListEntity> getPlaceListByLid(int lid) throws ExecutionException, InterruptedException {
+    public List<PlaceListEntity> getPlaceListByLid(String lid) throws ExecutionException, InterruptedException {
         return placeListDao.getPlaceListByLid(lid);
     }
     

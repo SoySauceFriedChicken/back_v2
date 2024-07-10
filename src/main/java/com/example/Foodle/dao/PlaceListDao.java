@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PlaceListDao {
     public static final String COLLECTION_NAME = "PlaceList";
 
-    public List<PlaceListEntity> getUserPlaceLists(int uid) throws ExecutionException, InterruptedException {
+    public List<PlaceListEntity> getUserPlaceLists(String uid) throws ExecutionException, InterruptedException {
         List<PlaceListEntity> list = new ArrayList<>();
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).get();
@@ -33,7 +33,7 @@ public class PlaceListDao {
         return list;
     }
 
-    public List<PlaceListEntity> getPlaceListByLid(int lid) throws ExecutionException, InterruptedException {
+    public List<PlaceListEntity> getPlaceListByLid(String lid) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("lid", lid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();

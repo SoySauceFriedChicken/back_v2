@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FriendDao {
     public static final String COLLECTION_NAME = "Friend";
 
-    public List<FriendEntity> getFriendsByUid(int uid) throws ExecutionException, InterruptedException {
+    public List<FriendEntity> getFriendsByUid(String uid) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", uid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();

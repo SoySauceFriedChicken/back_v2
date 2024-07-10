@@ -38,7 +38,7 @@ public class PlaceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int pid;
+    private String pid;
     
     @Column(length = 100, nullable = false)
     private String name; // 이름

@@ -1,7 +1,10 @@
 package com.example.Foodle.dao;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,49 +49,22 @@ public class MeetingDao {
         return convertToMeetingDtos(db, meetingDocuments);
     }
 
-    public List<MeetingDto> getMeetingsByUid(int uid) throws ExecutionException, InterruptedException {
+    public List<MeetingDto> getMeetingsByUid(String uid) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", uid).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereArrayContains("member", uid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         return convertToMeetingDtos(db, documents);
     }
 
-    public MeetingDto getMeetingsByMid(int mid) throws ExecutionException, InterruptedException {
-
-        /*
+    public MeetingDto getMeetingsByMid(String mid) throws ExecutionException, InterruptedException {
         Firestore firestore = FirestoreClient.getFirestore();
-        CollectionReference users = firestore.collection(COLLECTION_NAME);
-        Query query = users.whereEqualTo("uid", uid);
-        ApiFuture<QuerySnapshot> querySnapshot = query.get();
-        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
-    
-        if (!documents.isEmpty()) {
-            log.info("User found: " + documents.get(0).toObject(UsersEntity.class));
-            return documents.get(0).toObject(UsersEntity.class);
-        } else {
-            log.info("User not found");
-            return null; // 또는 예외를 던지거나 원하는 로직을 추가
-        }
-         */
-        // Firestore db = FirestoreClient.getFirestore();
-        // ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("mid", mid).get();
-        // List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-        // return convertToMeetingDtos(db, documents);
+        CollectionReference meetingsRef = firestore.collection(COLLECTION_NAME);
+        ApiFuture<QuerySnapshot> future = meetingsRef.whereEqualTo("mid", mid).get();
 
-        Firestore firestore = FirestoreClient.getFirestore();
-        CollectionReference users = firestore.collection(COLLECTION_NAME);
-        Query query = users.whereEqualTo("mid", mid);
-        ApiFuture<QuerySnapshot> querySnapshot = query.get();
-        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
-        if (!documents.isEmpty()) {
-            log.info("Meeting found: " + documents.get(0).toObject(UsersEntity.class));
-            return documents.get(0).toObject(MeetingDto.class);
-        } else {
-            log.info("Meeting not found");
-            return null; // 또는 예외를 던지거나 원하는 로직을 추가
-        }
-
+        List<MeetingDto> meetingDtos = convertToMeetingDtos(firestore, documents);
+        return meetingDtos.isEmpty() ? null : meetingDtos.get(0);
     }
 
     private List<MeetingDto> convertToMeetingDtos(Firestore db, List<QueryDocumentSnapshot> documents) throws ExecutionException, InterruptedException {
@@ -97,10 +73,10 @@ public class MeetingDao {
         for (QueryDocumentSnapshot document : documents) {
             MeetEntity meetEntity = document.toObject(MeetEntity.class);
 
-            List<Integer> memberIds = meetEntity.getMember();
+            List<String> memberIds = meetEntity.getMember();
             List<UsersEntity> joiners = new ArrayList<>();
 
-            for (Integer memberId : memberIds) {
+            for (String memberId : memberIds) {
                 Query userRef = db.collection(USERS_COLLECTION_NAME).whereEqualTo("uid", memberId);
                 ApiFuture<QuerySnapshot> userSnapshotFuture = userRef.get();
                 QuerySnapshot userSnapshot = userSnapshotFuture.get();
@@ -128,7 +104,18 @@ public class MeetingDao {
                     // Create a new map to store the pid and place data
                     Map<String, Object> placeEntry = new HashMap<>();
                     placeEntry.put("place", placeData);
-                    placeEntry.put("time", list.get("time"));
+
+                    String dateString = list.get("time").toString();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date dates = null;
+
+                    try {
+                        dates = formatter.parse(dateString);
+                        System.out.println("Date: " + dates);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    placeEntry.put("time", dates);
 
                     placeLists.add(placeEntry);
                     log.info("Place found: " + placeData);
@@ -137,11 +124,22 @@ public class MeetingDao {
                 }
             }
 
+            String dateString = meetEntity.getDate();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date dates = null;
+
+            try {
+                dates = formatter.parse(dateString);
+                System.out.println("Date: " + dates);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
             MeetingDto meetingDto = new MeetingDto(
                 meetEntity.getMid(),
                 meetEntity.getUid(),
                 meetEntity.getName(),
-                meetEntity.getDate(),
+                dates,  // try-catch 블록 외부에서 선언된 dates 변수 사용
                 placeLists,
                 joiners
             );
@@ -169,7 +167,7 @@ public class MeetingDao {
         }
 
         // MeetDto에서 mid 가져오기
-        int mid = meet.getMid();
+        String mid = meet.getMid();
         List<Integer> members = new ArrayList<>();
 
         // MeetEntity로 변환
@@ -204,7 +202,7 @@ public class MeetingDao {
         System.out.println("Meeting with mid " + mid + " updated successfully!");
     }
 
-    public void addPlaceList(int mid, Map<String, Object> meetplace) throws InterruptedException, ExecutionException {
+    public void addPlaceList(String mid, Map<String, Object> meetplace) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
         Query query = meetingsRef.whereEqualTo("mid", mid);
@@ -215,7 +213,17 @@ public class MeetingDao {
             DocumentSnapshot document = documents.get(0);
             MeetEntity meetEntity = document.toObject(MeetEntity.class);
             List<Map<String, Object>> lists = meetEntity.getLists() != null ? meetEntity.getLists() : new ArrayList<>();
-            lists.add(meetplace);
+            
+            Map<String, Object> newPlace = new HashMap<>();
+                        
+            for(Map<String, Object> list : lists) {
+                Map<String, Object> existingPlace = (Map<String, Object>) list.get("place");
+
+                Object existingPid = existingPlace.get("pid");
+                newPlace.put("place", existingPid);
+                newPlace.put("time", meetplace.get("time"));
+                lists.add(meetplace);
+            }
 
             meetEntity.setLists(lists);
             document.getReference().set(meetEntity);

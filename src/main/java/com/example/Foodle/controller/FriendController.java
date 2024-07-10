@@ -32,7 +32,7 @@ public class FriendController {
     }
 
     @GetMapping("/byUid")
-    public ResponseEntity getFriendsByUid(@RequestParam int uid) throws ExecutionException, InterruptedException {
+    public ResponseEntity getFriendsByUid(@RequestParam String uid) throws ExecutionException, InterruptedException {
         try {
             List<FriendDto> friends = friendService.getFriendsWithUserDetails(uid);
             return ResponseEntity.ok(friends);
@@ -43,7 +43,7 @@ public class FriendController {
     }
 
     @PostMapping("/Create")
-    public String createFriend(@RequestParam int uid, @RequestParam int fid)  throws ExecutionException, InterruptedException {
+    public String createFriend(@RequestParam String uid, @RequestParam String fid)  throws ExecutionException, InterruptedException {
         try {
             friendService.createFriend(uid, fid);
             return "Friend created successfully";
@@ -54,7 +54,7 @@ public class FriendController {
     }
 
     @PostMapping("/Update")
-    public String updateFriend(@RequestParam int uid, @RequestParam int fid)  throws ExecutionException, InterruptedException {
+    public String updateFriend(@RequestParam String uid, @RequestParam String fid)  throws ExecutionException, InterruptedException {
         try {
             friendService.updateFriend(uid, fid);
             return "Friend updated successfully";

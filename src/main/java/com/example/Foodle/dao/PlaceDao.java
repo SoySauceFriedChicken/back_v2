@@ -31,7 +31,7 @@ public class PlaceDao {
         return list;
     }
 
-    public List<PlaceEntity> getPlaceByPid(int pid) throws ExecutionException, InterruptedException {
+    public List<PlaceEntity> getPlaceByPid(String pid) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("pid", pid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();

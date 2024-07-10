@@ -16,8 +16,6 @@ import com.google.cloud.firestore.QuerySnapshot;
 @Getter
 @Setter
 public class FriendDto {
-    private int fid;
-    private int uid;
     private UsersEntity user;
     private Boolean like;
 

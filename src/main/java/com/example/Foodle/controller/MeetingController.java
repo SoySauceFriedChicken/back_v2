@@ -43,12 +43,12 @@ public class MeetingController {
     }
 
     @GetMapping("/byUid")
-    public List<MeetingDto> getMeetingsByName(@RequestParam int uid) throws ExecutionException, InterruptedException {
+    public List<MeetingDto> getMeetingsByName(@RequestParam String uid) throws ExecutionException, InterruptedException {
         return meetingService.getMeetingsByUid(uid);
     }
 
     @GetMapping("/byMid")
-    public MeetingDto getMeetingsByMid(@RequestParam int mid) throws ExecutionException, InterruptedException {
+    public MeetingDto getMeetingsByMid(@RequestParam String mid) throws ExecutionException, InterruptedException {
         return meetingService.getMeetingsByMid(mid);
     }
     
@@ -79,7 +79,7 @@ public class MeetingController {
     @PostMapping("/update/addPlace")
     public ResponseEntity<String>addPlaceList(@RequestBody Map<String, Object> request) {
         try {
-            int mid = (int) request.get("mid");
+            String mid = (String) request.get("mid");
             Map<String, Object> meetplace = (Map<String, Object>) request.get("meetplace");
 
             // 서비스 메서드 호출

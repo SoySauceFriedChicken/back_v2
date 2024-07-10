@@ -34,17 +34,17 @@ import jakarta.persistence.Transient;
 public class MeetEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int mid;
-    private int uid;
+    private String mid;
+    private String uid;
     
     @Column(length = 100, nullable = false)
     private String name;
-    private Date date;
+    private String date;
 
     @ElementCollection
     @CollectionTable(name = "member", joinColumns = @JoinColumn(name = "mid"))
     @Column(name = "member_id") // or any appropriate column name
-    private List<Integer> member;
+    private List<String> member;
 
     // @ElementCollection
     // @CollectionTable(name = "placeList", joinColumns = @JoinColumn(name = "mid"))
@@ -58,21 +58,21 @@ public class MeetEntity {
     @Column(name = "time")
     private List<Map<String, Object>> lists = new ArrayList<>();
 
-    // placeList를 업데이트하는 메서드
+    // placeList를 lists로 변환
     public void updatePlaceList(Map<String, Object> meetplace) {
         Map<String, Object> newPlace = (Map<String, Object>) meetplace.get("place");
         Object newPid = newPlace.get("pid");
 
         boolean updated = false;
 
-        for (Map<String, Object> existingEntry : lists) {
-            Map<String, Object> existingPlace = (Map<String, Object>) existingEntry.get("place");
-            Object existingPid = existingPlace.get("pid");
+        for (Map<String, Object> existingEntry : lists) {            
+            Map<String, Object> existingPlace = new HashMap<>(existingEntry);
+            String existingPlaceId = (String) existingEntry.get("place");
 
-            if (newPid.equals(existingPid)) {
+            if (newPid.equals(existingPlace)) {
                 // 기존 엔트리를 업데이트
-                existingPlace.putAll(newPlace);
-                existingEntry.put("time", meetplace.get("time"));
+                existingPlace.put("place", existingPlaceId);
+                existingPlace.put("time", meetplace.get("time"));
                 updated = true;
                 break;
             }

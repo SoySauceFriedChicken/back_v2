@@ -30,11 +30,11 @@ public class MeetingService {
         return meetingDao.getMeeting();
     }
 
-    public List<MeetingDto> getMeetingsByUid(int uid) throws ExecutionException, InterruptedException {
+    public List<MeetingDto> getMeetingsByUid(String uid) throws ExecutionException, InterruptedException {
         return meetingDao.getMeetingsByUid(uid);
     }
 
-    public MeetingDto getMeetingsByMid(int mid) throws ExecutionException, InterruptedException {
+    public MeetingDto getMeetingsByMid(String mid) throws ExecutionException, InterruptedException {
         return meetingDao.getMeetingsByMid(mid);
     }
 
@@ -46,7 +46,7 @@ public class MeetingService {
         meetingDao.updateMeet(meet);
     }
 
-    public void addPlaceList(int mid, Map<String, Object> meetplace) throws InterruptedException, ExecutionException {
+    public void addPlaceList(String mid, Map<String, Object> meetplace) throws InterruptedException, ExecutionException {
         meetingDao.addPlaceList(mid, meetplace);
     }
 
