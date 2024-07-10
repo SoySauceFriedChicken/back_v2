@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.Foodle.entity.UsersEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +21,8 @@ public class MeetingDto {
     private final String mid;
     private final String uid;
     private final String name;
-    private final Date date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "UTC")
+    private Date date;
 
     private final List<UsersEntity> joiners;
 

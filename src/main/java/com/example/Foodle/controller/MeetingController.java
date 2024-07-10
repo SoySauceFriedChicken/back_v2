@@ -52,7 +52,8 @@ public class MeetingController {
         return meetingService.getMeetingsByMid(mid);
     }
     
-    @PostMapping("/create")
+
+    @PostMapping(path = "/create", consumes = "application/json", produces = "application/json")
     public String createMeeting(@RequestBody @Valid NewMeetingDto newMeet) {
         MeetEntity meet = newMeet.toEntity();
         try {

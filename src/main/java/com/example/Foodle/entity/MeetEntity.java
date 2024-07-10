@@ -1,7 +1,7 @@
 package com.example.Foodle.entity;
 
 import java.util.ArrayList;
-import java.util.Date;
+import com.google.type.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

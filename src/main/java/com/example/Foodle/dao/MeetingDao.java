@@ -105,8 +105,9 @@ public class MeetingDao {
                     Map<String, Object> placeEntry = new HashMap<>();
                     placeEntry.put("place", placeData);
 
+                    log.info("Place data: " + list.get("time"));
                     String dateString = list.get("time").toString();
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
                     Date dates = null;
 
                     try {
@@ -125,7 +126,7 @@ public class MeetingDao {
             }
 
             String dateString = meetEntity.getDate();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss +dddd");
             Date dates = null;
 
             try {
@@ -153,6 +154,7 @@ public class MeetingDao {
 
     public void saveMeet(MeetEntity meetEntity) {
         Firestore db = FirestoreClient.getFirestore();
+        
         db.collection(COLLECTION_NAME).document().set(meetEntity);
 
         log.info("Meeting saved successfully!");
