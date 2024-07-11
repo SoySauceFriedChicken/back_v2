@@ -40,9 +40,9 @@ public class PlaceController {
     }
 
     @GetMapping("/byPlaceName")
-    public List<PlaceDto> getMeetingsByName(@RequestParam String placeName) throws ExecutionException, InterruptedException {
+    public List<PlaceDto> getMeetingsByName(@RequestParam String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
         log.info("placeName: " + placeName);
-        return placeService.getPlaceByPlaceName(placeName);
+        return placeService.getPlaceByPlaceName(placeName, latitude, longitude);
     }
 
     

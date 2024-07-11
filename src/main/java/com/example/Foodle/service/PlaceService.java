@@ -29,28 +29,10 @@ public class PlaceService {
     }
 
     public List<PlaceDto> getAllPlaces() throws ExecutionException, InterruptedException {
-        Firestore db = getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-        
-        List<PlaceDto> places = new ArrayList<>();
-        for (QueryDocumentSnapshot document : documents) {
-            places.add(document.toObject(PlaceDto.class));
-        }
-        return places;
+        return placeDao.getAllPlaces();
     }
-    public List<PlaceDto> getPlaceByPlaceName(String placeName) throws ExecutionException, InterruptedException {
-        Firestore db = getFirestore();
-        CollectionReference meetings = db.collection(COLLECTION_NAME);
-        Query query = meetings.whereEqualTo("name", placeName); // Use the correct Query class
-        ApiFuture<QuerySnapshot> future = query.get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-        
-        List<PlaceDto> placeByPlaceName = new ArrayList<>();
-        for (QueryDocumentSnapshot document : documents) {
-            placeByPlaceName.add(document.toObject(PlaceDto.class));
-        }
-        return placeByPlaceName;
+    public List<PlaceDto> getPlaceByPlaceName(String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
+        return placeDao.getPlaceByPlaceName(placeName, latitude, longitude);    
     }
 
 }
