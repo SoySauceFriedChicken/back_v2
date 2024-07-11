@@ -35,19 +35,16 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlaceEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String pid;
-    
     @Column(length = 100, nullable = false)
-    private String name; // 이름
-    private String tell; // 전화번호
+    private String placeName; // 이름
+    private String tel; // 전화번호
 
-    private String image; // 이미지
-    private String instaUrl; // 인스타그램 URL
+    private List<String> images; // 이미지
+    private String instaURL; // 인스타그램 URL
     private Double rating; // 평점
-    private String reviewUrl; // 리뷰 URL
+    private String reviewURL; // 리뷰 URL
     private String category; // 주소
 
     // @ElementCollection
@@ -60,8 +57,6 @@ public class PlaceEntity {
     // @Column(name = "value")
     // private Map<String, String> address = new HashMap<>();
 
-    
-    
     private double latitude;
     private double longitude;
 
@@ -79,12 +74,12 @@ public class PlaceEntity {
     @CollectionTable(name = "breaktime_mapping", joinColumns = @JoinColumn(name = "pid"))
     @MapKeyColumn(name = "day_of_week")
     @Column(name = "breaktime")
-    private Map<String, String> breaktime = new HashMap<>();
+    private List<String> breaktime = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "working_hours_mapping", joinColumns = @JoinColumn(name = "pid"))
     @MapKeyColumn(name = "day_of_week")
     @Column(name = "working_hours")
-    private Map<String, String> working = new HashMap<>();
+    private List<String> working = new ArrayList<>();
 
 }

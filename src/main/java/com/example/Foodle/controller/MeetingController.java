@@ -2,6 +2,7 @@ package com.example.Foodle.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Foodle.dto.request.meeting.MeetingDto;
 import com.example.Foodle.dto.request.meeting.NewMeetingDto;
 import com.example.Foodle.dto.request.meeting.UpdateMeetingDto;
+import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.UsersEntity;
 import com.example.Foodle.service.MeetingService;
 import com.example.Foodle.service.UsersService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +51,7 @@ public class MeetingController {
     }
 
     @GetMapping("/byMid")
-    public MeetingDto getMeetingsByMid(@RequestParam String mid) throws ExecutionException, InterruptedException {
+    public MeetingDto getMeetingsByMid(@RequestParam int mid) throws ExecutionException, InterruptedException {
         return meetingService.getMeetingsByMid(mid);
     }
     
@@ -78,10 +81,17 @@ public class MeetingController {
     }
 
     @PostMapping("/update/addPlace")
-    public ResponseEntity<String>addPlaceList(@RequestBody Map<String, Object> request) {
+    public ResponseEntity<String> addPlaceList(@RequestBody Map<String, Object> request) {
         try {
-            String mid = (String) request.get("mid");
-            List<Map<String, Object>> meetplace = (List<Map<String, Object>>) request.get("places");
+            int mid = (int) request.get("mid");
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String, Object>> placesMapList = (List<Map<String, Object>>) request.get("places");
+            
+            List<MeetingPlaceDto> meetplace = new ArrayList<>();
+            for (Map<String, Object> placeMap : placesMapList) {
+                MeetingPlaceDto placeDto = objectMapper.convertValue(placeMap, MeetingPlaceDto.class);
+                meetplace.add(placeDto);
+            }
 
             // 서비스 메서드 호출
             meetingService.addPlaceList(mid, meetplace);
@@ -93,46 +103,52 @@ public class MeetingController {
         }
     }
 
-    @PostMapping("/update/updatePlace")
-    public ResponseEntity<String> updatePlaceFromMeeting(@RequestBody Map<String, Object> request) {
-        try {
-            String mid = (String) request.get("mid");
-            List<Map<String, Object>> meetplace = (List<Map<String, Object>>) request.get("places");
+    // @PostMapping("/update/updatePlace")
+    // public ResponseEntity<String> updatePlaceFromMeeting(@RequestBody Map<String, Object> request) {
+    //     try {
+    //         int mid = (int) request.get("mid");
+    //         List<MeetingPlaceDto> meetplace = (List<MeetingPlaceDto>) request.get("places");
 
-            // 서비스 메서드 호출
-            meetingService.updatePlaceList(mid, meetplace);
+    //         // 서비스 메서드 호출
+    //         meetingService.updatePlaceList(mid, meetplace);
 
-            return ResponseEntity.ok("Place list updated successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating place list");
-        }
-    }
+    //         return ResponseEntity.ok("Place list updated successfully");
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating place list");
+    //     }
+    // }
 
-    @PostMapping("/update/deletePlace")
-    public ResponseEntity<String> deletePlaceFromMeeting(@RequestBody Map<String, Object> request) {
-        try {
-            String mid = (String) request.get("mid");
-            List<Map<String, Object>> meetplace = (List<Map<String, Object>>) request.get("places");
+    // @PostMapping("/update/deletePlace")
+    // public ResponseEntity<String> deletePlaceFromMeeting(@RequestBody Map<String, Object> request) {
+    //     try {
+    //         int mid = (int) request.get("mid");
+    //         List<MeetingPlaceDto> meetplace = (List<MeetingPlaceDto>) request.get("places");
 
-            // 서비스 메서드 호출
-            meetingService.deletePlaceList(mid, meetplace);
+    //         // 서비스 메서드 호출
+    //         meetingService.deletePlaceList(mid, meetplace);
 
-            return ResponseEntity.ok("Place list updated successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating place list");
-        }
-    }
+    //         return ResponseEntity.ok("Place list updated successfully");
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating place list");
+    //     }
+    // }
     
-    
-    @PostMapping("/update/addUser")
-    public String addUserToMeeting(@RequestBody String entity) {
-        return entity;
+    // 약속에 유저 추가 + (삭제)
+    @PostMapping("/update/updateJoiner")
+    public ResponseEntity<String> addUserToMeeting(@RequestBody String entity) {
+        return null;
+        // return entity;
         
     }
 
-
+    // 약속 삭제
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteMeeting(@RequestBody String entity) {
+        return null;
+        // return entity;
+    }
     
     
 

@@ -47,9 +47,6 @@ public class UsersController {
 
     @PostMapping("/create")
     public String createUser(@RequestBody @Valid NewUserDto newUserDto) {
-        // System.out.println(newUserDto.toString());
-        log.info(newUserDto.toString());
-
         UsersEntity user = newUserDto.toEntity();
         try {
             usersService.saveUser(user);
@@ -63,9 +60,6 @@ public class UsersController {
 
     @PostMapping("/update")
     public String updateUser(@RequestBody @Valid UpdateUserDto updateUserDto) {
-        // System.out.println(updateUserDto.toString());
-        log.info(updateUserDto.toString());
-
         UsersEntity user = updateUserDto.toEntity();
         try {
             usersService.updateUser(user);
@@ -76,10 +70,6 @@ public class UsersController {
         }
         
     }
-
-
-    
-    
 
     // @GetMapping("/loginSuccess")
     // public String loginSuccess(@AuthenticationPrincipal OAuth2User oauth2User) {

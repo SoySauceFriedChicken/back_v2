@@ -1,8 +1,5 @@
 package com.example.Foodle.dto.request.place;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -11,38 +8,60 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List; // Import the correct List class
+import java.util.ArrayList;  // ArrayList 임포트
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class PlaceDto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String pid;
-    
     @Column(length = 100, nullable = false)
-    private String name; // 이름
-    private String tell; // 전화번호
+    private String placeName; // 이름
+    private String tel; // 전화번호
 
-    private String image; // 이미지
-    private String instaUrl; // 인스타그램 URL
+    private List<String> images; // 이미지
+    private String instaURL; // 인스타그램 URL
     private Double rating; // 평점
-    private String reviewUrl; // 리뷰 URL
+    private String reviewURL; // 리뷰 URL
     private String category; // 주소
 
     private double latitude;
     private double longitude;
     
-    private Map<String, String> breaktime = new HashMap<>();
+    private List<String> breakTime;
 
-    private Map<String, String> working = new HashMap<>();
+    private List<String> working;
 
-    public PlaceDto(String pid, String name, double latitude, double longitude){
-        this.pid = pid;
-        this.name = name;
+    public PlaceDto(String name, double latitude, double longitude){
+        this.placeName = name;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.tel = "";
+        this.images = new ArrayList<>();
+        this.instaURL = "";
+        this.rating = 0.0;
+        this.reviewURL = "";
+        this.category = "";
+        this.breakTime = new ArrayList<>();
+        this.working = new ArrayList<>();
     }
 
+    public PlaceDto(){
+        this.placeName = "";
+        this.latitude = 0;
+        this.longitude = 0;
+        this.tel = "";
+        this.images = new ArrayList<>();
+        this.instaURL = "";
+        this.rating = 0.0;
+        this.reviewURL = "";
+        this.category = "";
+        this.breakTime = new ArrayList<>();
+        this.working = new ArrayList<>();
+    }
 }

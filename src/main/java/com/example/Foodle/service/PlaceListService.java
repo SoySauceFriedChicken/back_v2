@@ -3,6 +3,8 @@ package com.example.Foodle.service;
 
 import com.example.Foodle.dao.MeetingDao;
 import com.example.Foodle.dao.PlaceDao;
+import com.example.Foodle.dao.PlaceListDao;
+import com.example.Foodle.dto.request.placeList.PlaceListDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.PlaceEntity;
 import com.example.Foodle.entity.PlaceListEntity;
@@ -20,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 
 public class PlaceListService {
     @Autowired
-    private PlaceDao placeDao;
+    private PlaceListDao placeListDao;
 
     private static final String COLLECTION_NAME = "PlaceList";
 
@@ -28,30 +30,10 @@ public class PlaceListService {
         return FirestoreClient.getFirestore();
     }
 
-    public List<PlaceListEntity> getUserPlaceLists(String uid) throws ExecutionException, InterruptedException {
-        Firestore db = getFirestore();
-        CollectionReference placeLists = db.collection(COLLECTION_NAME);
-        Query query = placeLists.whereEqualTo("uid", uid); // Use the correct Query class
-        ApiFuture<QuerySnapshot> future = query.get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-        
-        List<PlaceListEntity> userplaceLists = new ArrayList<>();
-        for (QueryDocumentSnapshot document : documents) {
-            userplaceLists.add(document.toObject(PlaceListEntity.class));
-        }
-        return userplaceLists;
+    public List<PlaceListDto> getUserPlaceLists(String uid) throws ExecutionException, InterruptedException {
+        return placeListDao.getUserPlaceLists(uid);
     }
-    public List<PlaceListEntity> getPlaceListByLid(String lid) throws ExecutionException, InterruptedException {
-        Firestore db = getFirestore();
-        CollectionReference placeLists = db.collection(COLLECTION_NAME);
-        Query query = placeLists.whereEqualTo("lid", lid); // Use the correct Query class
-        ApiFuture<QuerySnapshot> future = query.get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-        
-        List<PlaceListEntity> placeListInfo = new ArrayList<>();
-        for (QueryDocumentSnapshot document : documents) {
-            placeListInfo.add(document.toObject(PlaceListEntity.class));
-        }
-        return placeListInfo;
+    public List<PlaceListDto> getPlaceListByLid(int lid) throws ExecutionException, InterruptedException {
+        return placeListDao.getPlaceListByLid(lid);
     }
 }

@@ -66,6 +66,7 @@ public class FriendService {
         List<FriendDto> friendsWithUserDetails = new ArrayList<>();
         for (QueryDocumentSnapshot document : documents) {
             FriendEntity friendEntity = document.toObject(FriendEntity.class);
+            FriendDto friendDto = new FriendDto();
     
             log.info("User found: " + friendEntity.getUid());
                 Query userRef = db.collection(USERS_COLLECTION_NAME).whereEqualTo("uid", friendEntity.getFid());
@@ -77,14 +78,13 @@ public class FriendService {
                 if (!userDocument.isEmpty()) {
                     log.info("User found: " + userDocument.getDocuments().get(0).toObject(UsersEntity.class));
                     UsersEntity userEntity = userDocument.getDocuments().get(0).toObject(UsersEntity.class);
-                    friendEntity.setUser(userEntity);
+                    friendDto.setUser(userEntity);
+                    friendDto.setLike(friendEntity.getLike());
                 } else{
                     log.info("User not found");
                     
                 }
-
-            
-            friendsWithUserDetails.add(friendEntity.toDto());
+            friendsWithUserDetails.add(friendDto);
         }
         return friendsWithUserDetails;
     }

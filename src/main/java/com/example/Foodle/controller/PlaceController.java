@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Foodle.dto.request.place.PlaceDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.PlaceEntity;
 import com.example.Foodle.entity.UsersEntity;
@@ -23,22 +24,25 @@ import com.example.Foodle.service.PlaceService;
 import com.example.Foodle.service.UsersService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/place")
+@Slf4j
 public class PlaceController {
     @Autowired
     private PlaceService placeService;
 
     @GetMapping
-    public List<PlaceEntity> getAllMeetings() throws ExecutionException, InterruptedException {
+    public List<PlaceDto> getAllMeetings() throws ExecutionException, InterruptedException {
         return placeService.getAllPlaces();
     }
 
-    @GetMapping("/byPid")
-    public List<PlaceEntity> getMeetingsByName(@RequestParam String pid) throws ExecutionException, InterruptedException {
-        return placeService.getPlaceByPid(pid);
+    @GetMapping("/byPlaceName")
+    public List<PlaceDto> getMeetingsByName(@RequestParam String placeName) throws ExecutionException, InterruptedException {
+        log.info("placeName: " + placeName);
+        return placeService.getPlaceByPlaceName(placeName);
     }
 
     

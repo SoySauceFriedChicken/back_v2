@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.google.auto.value.AutoValue.Builder;
 import com.google.protobuf.Struct;
+import com.google.type.Color;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -21,18 +22,20 @@ import jakarta.persistence.MapKeyColumn;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @ToString
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlaceListEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String lid;
+    private int lid;
     
     @Column(length = 100, nullable = false)
     private String uid;
@@ -40,9 +43,9 @@ public class PlaceListEntity {
     private String color; // 색상
 
     @ElementCollection
-    @CollectionTable(name = "placeList", joinColumns = @JoinColumn(name = "pid"))
+    @CollectionTable(name = "placeList", joinColumns = @JoinColumn(name = "places"))
     @Column(name = "Place_id")
-    private List<String> pid;
+    private List<MeetingPlaceInfoEntity> places;
 
     // @ElementCollection
     // @CollectionTable(name = "placeList", joinColumns = @JoinColumn(name = "mid"))

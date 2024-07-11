@@ -9,7 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
+import com.example.Foodle.dto.request.place.PlaceDto;
 import com.example.Foodle.entity.MeetEntity;
+import com.example.Foodle.entity.MeetingPlaceEntity;
+import com.example.Foodle.entity.MeetingPlaceInfoEntity;
 import com.example.Foodle.entity.UsersEntity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -25,32 +29,31 @@ import lombok.ToString;
 // @AllArgsConstructor
 @ToString
 public class UpdateMeetingDto {
-    private final String mid;
-    private final String uid;
+    private final int mid;
     private final String name;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "UTC")
     private Date date;
 
     private final List<UsersEntity> joiners;
-    private final List<Map<String, Object>> placeList;
+    private final List<MeetingPlaceDto> places;
 
     @JsonCreator
     public UpdateMeetingDto(
-        @JsonProperty("mid") String mid,
+        @JsonProperty("mid") int mid,
         @JsonProperty("uid") String uid,
         @JsonProperty("name") String name,
         @JsonProperty("date") @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "UTC") Date date,
         @JsonProperty("joiners") List<UsersEntity> joiners,
-        @JsonProperty("placeList") List<Map<String, Object>> placeList) {
+        @JsonProperty("places") List<MeetingPlaceDto> places) {
         this.mid = mid;
-        this.uid = uid;
         this.name = name;
         this.date = date;
         this.joiners = joiners;
-        this.placeList = placeList;
+        this.places = places;
     }
 
 
+    // 받은 데이터를 Entity로 변환(DB에 저장하기 위함)
     public MeetEntity toEntity() {
         List<String> joinersIds = new ArrayList<>();
         for (UsersEntity user : joiners) {
@@ -58,21 +61,26 @@ public class UpdateMeetingDto {
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
-        List<Map<String, Object>> lists = new ArrayList<>();
-        if (placeList != null) {
-            for (Map<String, Object> placeEntry : placeList) {
-                Map<String, Object> place = (Map<String, Object>) placeEntry.get("place");
-                Map<String, Object> newPlace = new HashMap<>();
-                newPlace.put("place", place.get("pid"));
+        List<MeetingPlaceEntity> lists = new ArrayList<>();
+        // places = List<MeetingPlaceDto>
+        if (places != null) {
+            for (MeetingPlaceDto placeEntry : places) {
+                PlaceDto place = (PlaceDto) placeEntry.getPlace();
+                MeetingPlaceEntity newPlace = new MeetingPlaceEntity();
+
+                MeetingPlaceInfoEntity meetingPlaceInfoEntity = new MeetingPlaceInfoEntity(
+                    place.getPlaceName(),
+                    place.getLatitude(),
+                    place.getLongitude()
+                );
+                newPlace.setPlace(meetingPlaceInfoEntity);
                 // log.info("place.get(\"pid\") : " + place.get("pid"));
 
                 // placeEntry.get("time")이 Date 객체일 경우
-                if (placeEntry.get("time") instanceof Date) {
-                    Date date = (Date) placeEntry.get("time");
+                if (placeEntry.getTime() instanceof Date) {
+                    Date date = (Date) placeEntry.getTime();
                     ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of("UTC"));
-                    newPlace.put("time", formatter.format(zonedDateTime));
-                } else {
-                    newPlace.put("time", placeEntry.get("time"));
+                    newPlace.setTime(formatter.format(zonedDateTime));
                 }
                 lists.add(newPlace);
             }
@@ -80,6 +88,6 @@ public class UpdateMeetingDto {
 
        // Date 객체를 String으로 변환
         String formattedDate = formatter.format(ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of("UTC")));
-        return new MeetEntity(mid, uid, name, formattedDate, joinersIds, lists);
+        return new MeetEntity(mid, name, formattedDate, joinersIds, lists);
     }
 }

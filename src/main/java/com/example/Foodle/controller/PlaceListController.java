@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Foodle.dto.request.placeList.PlaceListDto;
 import com.example.Foodle.entity.PlaceListEntity;
 import com.example.Foodle.service.PlaceListService;
 
@@ -27,12 +28,12 @@ public class PlaceListController {
     private PlaceListService placeListService;
 
     @GetMapping("/byUid")
-    public List<PlaceListEntity> getAllMeetings(@RequestParam String uid) throws ExecutionException, InterruptedException {
+    public List<PlaceListDto> getAllMeetings(@RequestParam String uid) throws ExecutionException, InterruptedException {
         return placeListService.getUserPlaceLists(uid);
     }
 
     @GetMapping("/byLid")
-    public List<PlaceListEntity> getMeetingsByName(@RequestParam String lid) throws ExecutionException, InterruptedException {
+    public List<PlaceListDto> getMeetingsByName(@RequestParam int lid) throws ExecutionException, InterruptedException {
         return placeListService.getPlaceListByLid(lid);
     }
 }

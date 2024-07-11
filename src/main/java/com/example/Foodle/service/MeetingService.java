@@ -3,6 +3,7 @@ package com.example.Foodle.service;
 import com.example.Foodle.dao.MeetingDao;
 import com.example.Foodle.dto.request.friend.FriendDto;
 import com.example.Foodle.dto.request.meeting.MeetingDto;
+import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.UsersEntity;
 import com.google.api.core.ApiFuture;
@@ -34,11 +35,11 @@ public class MeetingService {
         return meetingDao.getMeetingsByUid(uid);
     }
 
-    public MeetingDto getMeetingsByMid(String mid) throws ExecutionException, InterruptedException {
+    public MeetingDto getMeetingsByMid(int mid) throws ExecutionException, InterruptedException {
         return meetingDao.getMeetingsByMid(mid);
     }
 
-    public void saveMeet(MeetEntity meet) {
+    public void saveMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
         meetingDao.saveMeet(meet);
     }
 
@@ -46,15 +47,15 @@ public class MeetingService {
         meetingDao.updateMeet(meet);
     }
 
-    public void addPlaceList(String mid, List<Map<String, Object>> meetplace) throws InterruptedException, ExecutionException {
+    public void addPlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
         meetingDao.addPlaceList(mid, meetplace);
     }
 
-    public void updatePlaceList(String mid, List<Map<String, Object>> meetplace) throws InterruptedException, ExecutionException {
-        meetingDao.updatePlaceList(mid, meetplace);
+    public void updatePlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
+        meetingDao.addPlaceList(mid, meetplace);
     }
-    public void deletePlaceList(String mid, List<Map<String, Object>> meetplace) throws InterruptedException, ExecutionException {
-        meetingDao.deletePlaceList(mid, meetplace);
+    public void deletePlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
+        meetingDao.addPlaceList(mid, meetplace);
     }
 
 }
