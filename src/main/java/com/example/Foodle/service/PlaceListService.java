@@ -45,4 +45,8 @@ public class PlaceListService {
     public void updatePlaceList(int lid, List<PlaceDto> placeList) throws InterruptedException, ExecutionException {
         placeListDao.updatePlaceList(lid, placeList);
     }
+
+    public void deletePlaceList(PlaceListEntity placeListEntity) throws InterruptedException, ExecutionException {
+        placeListDao.deletePlaceList(placeListEntity);
+    }
 }

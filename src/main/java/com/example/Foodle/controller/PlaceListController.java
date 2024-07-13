@@ -83,5 +83,17 @@ public class PlaceListController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating place list");
         }
     }
+
+    @PostMapping("/delete")
+    public ResponseEntity<String> deletePlaceList(@RequestBody PlaceListDto placeListDto) {
+        try {
+            placeListService.deletePlaceList(placeListDto.toEntity());
+            return ResponseEntity.ok("Place list deleted successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting place list");
+        }
+    }
+    
     
 }

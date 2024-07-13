@@ -53,7 +53,7 @@ public class PlaceListDao {
 
     public List<PlaceListDto> getPlaceListByLid(int lid) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("lid", lid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         return convertToMeetingDtos(db, documents);
     }
@@ -146,6 +146,22 @@ public class PlaceListDao {
         }
         else {
             log.info("PlaceList with lid " + lid + " not found");
+        }
+    }
+
+    public void deletePlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
+        Firestore db = FirestoreClient.getFirestore();
+        CollectionReference placeRef = db.collection(COLLECTION_NAME);
+        Query query = placeRef.whereEqualTo("lid", placeList.getLid());
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+        if(!documents.isEmpty()) {
+            DocumentSnapshot document = documents.get(0);
+            document.getReference().delete();
+        }
+        else {
+            log.info("PlaceList with lid " + placeList.getLid() + " not found");
         }
     }
 }
