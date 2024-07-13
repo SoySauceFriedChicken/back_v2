@@ -4,6 +4,7 @@ package com.example.Foodle.service;
 import com.example.Foodle.dao.MeetingDao;
 import com.example.Foodle.dao.PlaceDao;
 import com.example.Foodle.dao.PlaceListDao;
+import com.example.Foodle.dto.request.place.PlaceDto;
 import com.example.Foodle.dto.request.placeList.PlaceListDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.PlaceEntity;
@@ -35,5 +36,13 @@ public class PlaceListService {
     }
     public List<PlaceListDto> getPlaceListByLid(int lid) throws ExecutionException, InterruptedException {
         return placeListDao.getPlaceListByLid(lid);
+    }
+
+    public void createPlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
+        placeListDao.createPlaceList(placeList);
+    }
+
+    public void updatePlaceList(int lid, List<PlaceDto> placeList) throws InterruptedException, ExecutionException {
+        placeListDao.updatePlaceList(lid, placeList);
     }
 }

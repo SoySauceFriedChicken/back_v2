@@ -30,4 +30,6 @@ public class PlaceServiceImplement extends PlaceService {
     public List<PlaceDto> getPlaceByPlaceName(String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
         return placeDao.getPlaceByPlaceName(placeName, latitude, longitude);
     }
+
+    
 }

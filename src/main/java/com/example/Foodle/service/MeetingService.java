@@ -58,4 +58,12 @@ public class MeetingService {
         meetingDao.addPlaceList(mid, meetplace);
     }
 
+    public void addUserToMeeting(int mid, List<UsersEntity>joiners) throws InterruptedException, ExecutionException {
+        meetingDao.addUserToMeeting(mid, joiners);
+    }
+
+    public void deleteMeeting(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
+        meetingDao.deleteMeeting(meetEntity);
+    }
+
 }

@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import org.springframework.stereotype.Repository;
 
 import com.example.Foodle.dto.request.meeting.MeetingDto;
+import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceInfoDto;
 import com.example.Foodle.dto.request.place.PlaceDto;
 import com.example.Foodle.dto.request.placeList.PlaceListDto;
 import com.example.Foodle.entity.MeetEntity;
@@ -22,6 +23,8 @@ import com.example.Foodle.entity.PlaceEntity;
 import com.example.Foodle.entity.PlaceListEntity;
 import com.example.Foodle.entity.UsersEntity;
 import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -83,6 +86,7 @@ public class PlaceListDao {
 
             PlaceListDto placeListDto  = new PlaceListDto(
                 placeListEntity.getLid(),
+                placeListEntity.getUid(),
                 placeListEntity.getName(),
                 placeListEntity.getColor(),
                 placeLists
@@ -93,5 +97,55 @@ public class PlaceListDao {
         }
 
         return meetingDtos;
+    }
+
+    public void createPlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
+        Firestore db = FirestoreClient.getFirestore();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME)
+                                             .orderBy("lid", Query.Direction.DESCENDING)
+                                             .limit(1)
+                                             .get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        int size;
+        if (!documents.isEmpty()) {
+            QueryDocumentSnapshot document = documents.get(0);
+            size = document.getLong("lid").intValue();
+        } else {
+            size =  0; // 컬렉션이 비어있다면 0을 반환
+        }
+        log.info("size: " + size);
+
+        placeList.setLid(size + 1);
+        log.info("Saving meeting with lid " + placeList.getLid());
+        db.collection(COLLECTION_NAME).document().set(placeList);
+    }
+
+    public void updatePlaceList(int lid, List<PlaceDto> placeList) throws InterruptedException, ExecutionException {
+        Firestore db = FirestoreClient.getFirestore();
+        CollectionReference placeRef = db.collection(COLLECTION_NAME);
+        Query query = placeRef.whereEqualTo("lid", lid);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+        if(!documents.isEmpty()) {
+            DocumentSnapshot document = documents.get(0);
+            PlaceListEntity placeListEntity = document.toObject(PlaceListEntity.class);
+
+            List<MeetingPlaceInfoEntity> places = new ArrayList<>();
+            for (PlaceDto place : placeList) {
+                MeetingPlaceInfoEntity placeInfo = new MeetingPlaceInfoEntity(
+                    place.getPlaceName(),
+                    place.getLatitude(),
+                    place.getLongitude()
+                );
+                places.add(placeInfo);
+            }
+            placeListEntity.setPlaces(places);
+            document.getReference().set(placeListEntity);
+        }
+        else {
+            log.info("PlaceList with lid " + lid + " not found");
+        }
     }
 }

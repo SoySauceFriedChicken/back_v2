@@ -28,5 +28,10 @@ public class PlaceListServiceImplement extends PlaceListService {
     public List<PlaceListDto> getPlaceListByLid(int lid) throws ExecutionException, InterruptedException {
         return placeListDao.getPlaceListByLid(lid);
     }
+
+    @Override
+    public void createPlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
+        placeListDao.createPlaceList(placeList);
+    }
     
 }

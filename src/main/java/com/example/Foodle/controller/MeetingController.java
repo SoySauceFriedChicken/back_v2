@@ -137,17 +137,39 @@ public class MeetingController {
     
     // 약속에 유저 추가 + (삭제)
     @PostMapping("/update/updateJoiner")
-    public ResponseEntity<String> addUserToMeeting(@RequestBody String entity) {
-        return null;
-        // return entity;
+    public ResponseEntity<String> addUserToMeeting(@RequestBody Map<String, Object> entity) {
+        try {
+            int mid = (int) entity.get("mid");
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String, Object>> joiners = (List<Map<String, Object>>) entity.get("joiners");
+
+            List<UsersEntity> newUsers = new ArrayList<>();
+            for (Map<String, Object> joiner : joiners) {
+                UsersEntity joinerEntity = objectMapper.convertValue(joiner, UsersEntity.class);
+                newUsers.add(joinerEntity);
+            }
+            // 서비스 메서드 호출
+            meetingService.addUserToMeeting(mid, newUsers);
+            return ResponseEntity.ok("User added to meeting successfully");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding user to meeting");
+        }
+        
         
     }
 
     // 약속 삭제
     @PostMapping("/delete")
-    public ResponseEntity<String> deleteMeeting(@RequestBody String entity) {
-        return null;
-        // return entity;
+    public ResponseEntity<String> deleteMeeting(@RequestBody MeetingDto entity) {
+        try {
+            meetingService.deleteMeeting(entity.toEntity());
+            return ResponseEntity.ok("Meeting deleted successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting meeting");
+        }
     }
     
     
