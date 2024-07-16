@@ -6,8 +6,8 @@
 // import org.springframework.context.annotation.Configuration;
 // import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 // import org.springframework.beans.factory.annotation.Configurable;
+// import org.springframework.context.annotation.Bean;
 // import lombok.RequiredArgsConstructor;
-
 // import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 // import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 // import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
@@ -20,67 +20,59 @@
 // import org.springframework.web.cors.CorsConfiguration;
 // import org.springframework.web.cors.CorsConfigurationSource;
 // import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-// // import org.springframework.web.cors.SessionCreationPolicy;
-// import org.springframework.context.annotation.Bean;
 
-// import com.example.Foodle.filter.JwtAuthenticationFilter;
-// import com.example.Foodle.handler.OAuth2SuccessHandler;
+// // import com.example.Foodle.filter.JwtAuthenticationFilter;
+// // import com.example.Foodle.handler.OAuth2SuccessHandler;
 
 // import java.io.IOException;
 
-// @EnableWebSecurity
-// @Configuration
+// //@EnableWebSecurity
 // @Configurable
-// @RequiredArgsConstructor
-
+// @Configuration
+// // @RequiredArgsConstructor
 // public class WebSecurityConfig {
-//     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-//     private final DefaultOAuth2UserService oAuth2UserService;
-//     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+//     //private final JwtAuthenticationFilter jwtAuthenticationFilter;
+//     // private final DefaultOAuth2UserService oAuth2SuccessHandler;
 
 //     @SuppressWarnings("deprecation")
 //     @Bean
-//     protected SecurityFilterChain configure(HttpSecurity http, HttpSecurity httpSecurity) throws Exception{
-//         httpSecurity
-//         .cors(cors -> cors
-//             .configurationSource(corsConfigurationSource())
-//         )
-//         .csrf((CsrfConfigurer::disable))
-//         .httpBasic(HttpBasicConfigurer::disable)
-//         .sessionManagement(sessionManagement -> sessionManagement
-//             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//         )
-//         .authorizeRequests(request -> request
-//             .requestMatchers("/", "/api/v1/auth/**", "/oauth2/**", "/oauth2/callback/**", "/api/v1/auth/oauth2/**", "/v1/**").permitAll()
-//             .requestMatchers("/api/v1/user/**").hasRole("USER")
-//             .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-//             .anyRequest().authenticated()
-//         )
-//         .oauth2Login(oauth2 -> oauth2
-//             // .authorizationEndpoint(endpoint -> endpoint.baseUri("/api/v1/auth/oauth2"))
-//             // .loginProcessingUrl("/api/v1/oauth2/*")
-//             .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
-//             .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
-//             .successHandler(oAuth2SuccessHandler)
-//         )
-//         .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(new FailedAuthenticationEntryPoint()))
-//         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+//         http
+//             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//             .csrf(CsrfConfigurer::disable)
+//             .httpBasic(HttpBasicConfigurer::disable)
+//             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//             .authorizeRequests(request -> request
+//                 .requestMatchers("/", "/api/v1/auth/**", "/oauth2/**", "/oauth2/callback/**", "/api/v1/auth/oauth2/**", "/v1/**").permitAll()
+//                 .requestMatchers("/api/v1/user/**").hasRole("USER")
+//                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+//                 .anyRequest().authenticated()
+//             )
+//             // 소셜 로그인 설정
+//             .oauth2Login(oauth2 -> oauth2
+//                 .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
+//                 // .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2SuccessHandler))
+//                 // .successHandler(oAuth2SuccessHandler)
+//             )
+//             .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(new FailedAuthenticationEntryPoint()));
+//             //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-
-//         return httpSecurity.build();
+//         return http.build();
 //     }
-//     @Bean 
-//     protected CorsConfigurationSource corsConfigurationSource(){
+
+//     @Bean
+//     protected CorsConfigurationSource corsConfigurationSource() {
 //         CorsConfiguration configuration = new CorsConfiguration();
 //         configuration.addAllowedOrigin("*");
 //         configuration.addAllowedMethod("*");
 //         configuration.addAllowedHeader("*");
- 
+
 //         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 //         source.registerCorsConfiguration("/api/v1/**", configuration);
 //         return source;
 //     }
-//     class FailedAuthenticationEntryPoint implements AuthenticationEntryPoint{
+
+//     class FailedAuthenticationEntryPoint implements AuthenticationEntryPoint {
 //         @Override
 //         public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 //             response.setContentType("application/json");
@@ -88,6 +80,5 @@
 //             // {"code": "NP", "message":"No Permission"}
 //             response.getWriter().write("{\"code\": \"NP\", \"message\":\"No Permissions\"}");
 //         }
-
 //     }
 // }

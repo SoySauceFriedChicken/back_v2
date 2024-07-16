@@ -27,9 +27,14 @@ public class PlaceServiceImplement extends PlaceService {
     }
 
     @Override // Add the @Override annotation
-    public List<PlaceDto> getPlaceByPlaceName(String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
-        return placeDao.getPlaceByPlaceName(placeName, latitude, longitude);
+    public List<PlaceDto> getPlaceByPlaceName(String placeName) throws ExecutionException, InterruptedException {
+        return placeDao.getPlaceByPlaceName(placeName);
     }
 
-    
+    @Override // Add the @Override annotation
+    public List<PlaceDto> getPlaceByPlaceInfo(String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
+        return placeDao.getPlaceByPlaceInfo(placeName, latitude, longitude);
+    }
+
+
 }

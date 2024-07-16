@@ -20,11 +20,13 @@ public class UsersEntity {
     private String name;
     private String nickName;
     private String profileImage;
+    // private String role;
 
     public UsersEntity(String uid, String name, String nickName, String profileImage) {
         this.uid = uid;
         this.name = name;
         this.nickName = nickName;
         this.profileImage = profileImage;
+        // this.role = role;
     }
 }

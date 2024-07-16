@@ -1,8 +1,9 @@
 // package com.example.Foodle.filter;
 
-// import com.example.Foodle.entity.UserEntity;
+// import com.example.Foodle.entity.UsersEntity;
 // import com.example.Foodle.provider.JwtProvider;
-// import com.example.Foodle.repository.UserRepository;
+// import com.example.Foodle.service.UsersService;
+
 // import jakarta.servlet.FilterChain;
 // import jakarta.servlet.ServletException;
 // import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +29,7 @@
 // @RequiredArgsConstructor
 // public class JwtAuthenticationFilter extends OncePerRequestFilter{
 //     private final JwtProvider jwtProvider;
-//     private UserRepository userRepository;
+//     private UsersService usersService;
 
 
 //     @Override
@@ -45,7 +46,7 @@
 //                     filterChain.doFilter(request, response);
 //                     return;
 //                 }
-//                 UserEntity user = userRepository.findByuid(uid);
+//                 UsersEntity user = usersService.findByUid(uid);
 //                 String role = user.getRole(); // role = ROLE_USER or ROLE_ADMIN
 
 //                 List<GrantedAuthority> authorities = new ArrayList<>();

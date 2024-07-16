@@ -35,16 +35,21 @@ public class PlaceController {
     private PlaceService placeService;
 
     @GetMapping
-    public List<PlaceDto> getAllMeetings() throws ExecutionException, InterruptedException {
+    public List<PlaceDto> getAllPlaces() throws ExecutionException, InterruptedException {
         return placeService.getAllPlaces();
     }
 
     @GetMapping("/byPlaceName")
-    public List<PlaceDto> getMeetingsByName(@RequestParam String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
+    public List<PlaceDto> getPlacesByName(@RequestParam String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
         log.info("placeName: " + placeName);
-        return placeService.getPlaceByPlaceName(placeName, latitude, longitude);
+        return placeService.getPlaceByPlaceName(placeName);
     }
 
+    @GetMapping("/byPlaceInfo")
+    public List<PlaceDto> getPlacesByInfo(@RequestParam String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
+        log.info("placeName: " + placeName);
+        return placeService.getPlaceByPlaceInfo(placeName, latitude, longitude);
+    }
     
 
 }
