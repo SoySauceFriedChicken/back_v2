@@ -34,7 +34,7 @@ public class PlaceDao {
         return list;
     }
 
-    private static final int MAX_DISTANCE = 1; // Levenshtein 거리 임계값 설정
+    private static final int MAX_DISTANCE = 3; // Levenshtein 거리 임계값 설정
 
     public List<PlaceDto> getPlaceByPlaceName(String placeName) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
