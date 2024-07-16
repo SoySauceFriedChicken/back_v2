@@ -41,15 +41,20 @@ public class PlaceController {
 
     @GetMapping("/byPlaceName")
     public List<PlaceDto> getPlacesByName(@RequestParam String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
-        log.info("placeName: " + placeName);
+        //log.info("placeName: " + placeName);
         return placeService.getPlaceByPlaceName(placeName);
     }
 
     @GetMapping("/byPlaceInfo")
     public List<PlaceDto> getPlacesByInfo(@RequestParam String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
-        log.info("placeName: " + placeName);
+        //log.info("placeName: " + placeName);
         return placeService.getPlaceByPlaceInfo(placeName, latitude, longitude);
     }
-    
+
+    @GetMapping("/byCategory")
+    public List<PlaceDto> getPlacesByCategory(@RequestParam String category) throws ExecutionException, InterruptedException {
+        //log.info("placeName: " + category);
+        return placeService.getPlacesByCategory(category);
+    }
 
 }

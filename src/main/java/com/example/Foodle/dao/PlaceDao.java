@@ -13,6 +13,8 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
+import org.apache.commons.text.similarity.LevenshteinDistance;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,9 +34,46 @@ public class PlaceDao {
         return list;
     }
 
+    private static final int MAX_DISTANCE = 1; // Levenshtein 거리 임계값 설정
+
     public List<PlaceDto> getPlaceByPlaceName(String placeName) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("placeName", placeName).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        List<PlaceDto> places = new ArrayList<>();
+        for (QueryDocumentSnapshot document : documents) {
+            PlaceDto place = document.toObject(PlaceDto.class);
+            if (isSimilar(place.getPlaceName(), placeName) || containsWord(place.getPlaceName(), placeName)) {
+                places.add(place);
+            }
+        }
+        return sortPlacesBySimilarity(places, placeName);
+    }
+
+    private boolean isSimilar(String source, String target) {
+        LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
+        int distance = levenshteinDistance.apply(source, target);
+        return distance <= MAX_DISTANCE;
+    }
+
+    private boolean containsWord(String source, String target) {
+        return source.toLowerCase().contains(target.toLowerCase());
+    }
+
+    private List<PlaceDto> sortPlacesBySimilarity(List<PlaceDto> places, String target) {
+        LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
+        return places.stream()
+                .sorted((place1, place2) -> {
+                    int distance1 = levenshteinDistance.apply(place1.getPlaceName(), target);
+                    int distance2 = levenshteinDistance.apply(place2.getPlaceName(), target);
+                    return Integer.compare(distance1, distance2);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<PlaceDto> getPlaceByPlaceInfo(String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("placeName", placeName).whereEqualTo("latitude", latitude).whereEqualTo("longitude", longitude).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         List<PlaceDto> places = new ArrayList<>();
         for (QueryDocumentSnapshot document : documents) {
@@ -43,9 +82,9 @@ public class PlaceDao {
         return places;
     }
 
-    public List<PlaceDto> getPlaceByPlaceInfo(String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
+    public List<PlaceDto> getPlacesByCategory(String category) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("placeName", placeName).whereEqualTo("latitude", latitude).whereEqualTo("longitude", longitude).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("category", category).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         List<PlaceDto> places = new ArrayList<>();
         for (QueryDocumentSnapshot document : documents) {

@@ -28,6 +28,8 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-test'
 	implementation 'javax.servlet:javax.servlet-api:4.0.1'
 	implementation group: 'com.google.firebase', name: 'firebase-admin', version: '8.1.0'
+
+	implementation 'org.apache.commons:commons-text:1.9'
 	
 	implementation group: 'io.jsonwebtoken', name:'jjwt-api', version:'0.11.2'
 	implementation group: 'io.jsonwebtoken', name:'jjwt-impl', version:'0.11.2'
