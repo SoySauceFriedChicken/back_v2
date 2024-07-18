@@ -34,8 +34,8 @@ public class PlaceService {
     public List<PlaceDto> getPlaceByPlaceName(String placeName) throws ExecutionException, InterruptedException {
         return placeDao.getPlaceByPlaceName(placeName);    
     }
-    public List<PlaceDto> getPlaceByPlaceInfo(String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
-        return placeDao.getPlaceByPlaceInfo(placeName, latitude, longitude);    
+    public List<PlaceDto> getPlaceByPlaceInfo(String placeName, Double latitude, Double longtitude) throws ExecutionException, InterruptedException {
+        return placeDao.getPlaceByPlaceInfo(placeName, latitude, longtitude);    
     }
 
     public List<PlaceDto> getPlacesByCategory(String category) throws ExecutionException, InterruptedException {

@@ -75,9 +75,9 @@ public class PlaceDao {
                 .collect(Collectors.toList());
     }
 
-    public List<PlaceDto> getPlaceByPlaceInfo(String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
+    public List<PlaceDto> getPlaceByPlaceInfo(String placeName, Double latitude, Double longtitude) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("placeName", placeName).whereEqualTo("latitude", latitude).whereEqualTo("longitude", longitude).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("placeName", placeName).whereEqualTo("latitude", latitude).whereEqualTo("longtitude", longtitude).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         List<PlaceDto> places = new ArrayList<>();
         for (QueryDocumentSnapshot document : documents) {

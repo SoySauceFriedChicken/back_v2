@@ -40,15 +40,15 @@ public class PlaceController {
     }
 
     @GetMapping("/byPlaceName")
-    public List<PlaceDto> getPlacesByName(@RequestParam String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
+    public List<PlaceDto> getPlacesByName(@RequestParam String placeName) throws ExecutionException, InterruptedException {
         //log.info("placeName: " + placeName);
         return placeService.getPlaceByPlaceName(placeName);
     }
 
     @GetMapping("/byPlaceInfo")
-    public List<PlaceDto> getPlacesByInfo(@RequestParam String placeName, Double latitude, Double longitude) throws ExecutionException, InterruptedException {
+    public List<PlaceDto> getPlacesByInfo(@RequestParam String placeName, Double latitude, Double longtitude) throws ExecutionException, InterruptedException {
         //log.info("placeName: " + placeName);
-        return placeService.getPlaceByPlaceInfo(placeName, latitude, longitude);
+        return placeService.getPlaceByPlaceInfo(placeName, latitude, longtitude);
     }
 
     @GetMapping("/byCategory")

@@ -72,7 +72,7 @@ public class PlaceListDao {
                 Query placeRef = db.collection(PLACE_COLLECTION_NAME)
                                    .whereEqualTo("placeName", list.getPlaceName())
                                    .whereEqualTo("latitude", list.getLatitude())
-                                   .whereEqualTo("longitude", list.getLongitude());
+                                   .whereEqualTo("longtitude", list.getLongtitude());
                 ApiFuture<QuerySnapshot> placeSnapshotFuture = placeRef.get();
                 QuerySnapshot placeSnapshot = placeSnapshotFuture.get();
     
@@ -143,7 +143,7 @@ public class PlaceListDao {
                 MeetingPlaceInfoEntity placeInfo = new MeetingPlaceInfoEntity(
                     place.getPlaceName(),
                     place.getLatitude(),
-                    place.getLongitude()
+                    place.getLongtitude()
                 );
                 places.add(placeInfo);
             }

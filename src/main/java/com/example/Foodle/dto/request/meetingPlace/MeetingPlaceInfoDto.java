@@ -12,5 +12,5 @@ import lombok.Setter;
 public class MeetingPlaceInfoDto {
     private String name;
     private double latitude;
-    private double longitude;
+    private double longtitude;
 }

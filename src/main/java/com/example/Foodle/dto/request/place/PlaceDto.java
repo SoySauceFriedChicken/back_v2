@@ -29,25 +29,27 @@ public class PlaceDto {
     private String instaURL; // 인스타그램 URL
     private Double rating; // 평점
     private String reviewURL; // 리뷰 URL
-    private String category; // 주소
+    private String category; // 카테고리 
+    private String address; // 주소
 
     private double latitude;
-    private double longitude;
+    private double longtitude;
     
     private List<String> breakTime;
 
     private List<String> working;
 
-    public PlaceDto(String name, double latitude, double longitude){
+    public PlaceDto(String name, double latitude, double longtitude){
         this.placeName = name;
         this.latitude = latitude;
-        this.longitude = longitude;
+        this.longtitude = longtitude;
         this.tel = "";
         this.images = new ArrayList<>();
         this.instaURL = "";
         this.rating = 0.0;
         this.reviewURL = "";
         this.category = "";
+        this.address = "";
         this.breakTime = new ArrayList<>();
         this.working = new ArrayList<>();
     }
@@ -55,13 +57,14 @@ public class PlaceDto {
     public PlaceDto(){
         this.placeName = "";
         this.latitude = 0;
-        this.longitude = 0;
+        this.longtitude = 0;
         this.tel = "";
         this.images = new ArrayList<>();
         this.instaURL = "";
         this.rating = 0.0;
         this.reviewURL = "";
         this.category = "";
+        this.address = "";
         this.breakTime = new ArrayList<>();
         this.working = new ArrayList<>();
     }

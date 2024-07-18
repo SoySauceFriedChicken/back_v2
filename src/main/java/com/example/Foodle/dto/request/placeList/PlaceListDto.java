@@ -41,7 +41,7 @@ public class PlaceListDto {
     public PlaceListEntity toEntity(){
         List<MeetingPlaceInfoEntity> meetingPlaceInfoEntity = new ArrayList<>();
         for(PlaceDto placeDto : places){
-            meetingPlaceInfoEntity.add(new MeetingPlaceInfoEntity(placeDto.getPlaceName(), placeDto.getLatitude(), placeDto.getLongitude()));
+            meetingPlaceInfoEntity.add(new MeetingPlaceInfoEntity(placeDto.getPlaceName(), placeDto.getLatitude(), placeDto.getLongtitude()));
         }
         return new PlaceListEntity(lid, uid, name, color, meetingPlaceInfoEntity);
     }

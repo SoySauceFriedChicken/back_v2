@@ -45,7 +45,8 @@ public class PlaceEntity {
     private String instaURL; // 인스타그램 URL
     private Double rating; // 평점
     private String reviewURL; // 리뷰 URL
-    private String category; // 주소
+    private String category; // 카테고리
+    private String address; // 주소
 
     // @ElementCollection
     // @CollectionTable(name = "coordinates", joinColumns = @JoinColumn(name = "location_id"))
@@ -58,7 +59,7 @@ public class PlaceEntity {
     // private Map<String, String> address = new HashMap<>();
 
     private double latitude;
-    private double longitude;
+    private double longtitude;
 
     // static <INSTANCE> List<Converter<?, ?>> getConvertersToRegister() {
     //     return [

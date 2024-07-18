@@ -76,7 +76,7 @@ public class NewMeetingDto {
                 MeetingPlaceInfoEntity meetingPlaceInfoEntity = new MeetingPlaceInfoEntity(
                     place.getPlaceName(),
                     place.getLatitude(),
-                    place.getLongitude()
+                    place.getLongtitude()
                 );
                 newPlace.setPlace(meetingPlaceInfoEntity);
                 // log.info("place.get(\"pid\") : " + place.get("pid"));

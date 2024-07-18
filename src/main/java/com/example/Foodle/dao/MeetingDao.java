@@ -114,7 +114,7 @@ public class MeetingDao {
             for (MeetingPlaceEntity list : lists) {
                 Query placeRef = db.collection(PLACE_COLLECTION_NAME).whereEqualTo("placeName", list.getPlace().getPlaceName())
                         .whereEqualTo("latitude", list.getPlace().getLatitude())
-                        .whereEqualTo("longitude", list.getPlace().getLongitude());
+                        .whereEqualTo("longtitude", list.getPlace().getLongtitude());
                 ApiFuture<QuerySnapshot> placeSnapshotFuture = placeRef.get();
                 QuerySnapshot placeSnapshot = placeSnapshotFuture.get();
 
@@ -256,7 +256,7 @@ public class MeetingDao {
                 MeetingPlaceInfoEntity placeInfoEntity = new MeetingPlaceInfoEntity(
                     placeDto.getPlace().getPlaceName(),
                     placeDto.getPlace().getLatitude(),
-                    placeDto.getPlace().getLongitude()
+                    placeDto.getPlace().getLongtitude()
                 );
                 newPlaceEntity.setPlace(placeInfoEntity);
 
