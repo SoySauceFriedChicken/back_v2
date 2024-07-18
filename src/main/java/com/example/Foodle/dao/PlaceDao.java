@@ -31,12 +31,16 @@ public class PlaceDao {
         for (QueryDocumentSnapshot document : documents) {
             list.add(document.toObject(PlaceDto.class));
         }
+        list.sort((place1, place2) -> place1.getPlaceName().compareTo(place2.getPlaceName()));
         return list;
     }
 
     private static final int MAX_DISTANCE = 3; // Levenshtein 거리 임계값 설정
 
     public List<PlaceDto> getPlaceByPlaceName(String placeName) throws ExecutionException, InterruptedException {
+        if(placeName == null) {
+            return getAllPlaces();
+        }
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();

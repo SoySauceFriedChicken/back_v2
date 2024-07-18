@@ -129,7 +129,7 @@ public class MeetingDao {
 
                     try {
                         dates = formatter.parse(dateString);
-                        System.out.println("Date: " + dates);
+                        // System.out.println("Date: " + dates);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -163,11 +163,11 @@ public class MeetingDao {
             meetingDtos.add(meetingDto);
             // log.info("Meeting found: " + meetingDto);
         }
-
+        meetingDtos.sort((m1, m2) -> m1.getMid() - m2.getMid());
         return meetingDtos;
     }
 
-    public void saveMeet(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
+    public String saveMeet(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME)
                                             .orderBy("mid", Query.Direction.DESCENDING)
@@ -178,6 +178,9 @@ public class MeetingDao {
         int size;
         if (!documents.isEmpty()) {
             QueryDocumentSnapshot document = documents.get(0);
+            if(document.getLong("member") == null) {
+                return "joiners is null";
+            }
             size =  document.getLong("mid").intValue();
         } else {
             size =  0; // 컬렉션이 비어있다면 0을 반환
@@ -185,18 +188,19 @@ public class MeetingDao {
         log.info("size: " + size);
 
         meetEntity.setMid(size + 1);
-        log.info("Saving meeting with mid " + meetEntity.getMid());
+        // log.info("Saving meeting with mid " + meetEntity.getMid());
         db.collection(COLLECTION_NAME).document().set(meetEntity);
+        return "Meeting created successfully!";
 
-        log.info("Meeting saved successfully!");
+        // log.info("Meeting saved successfully!");
     }
 
-    public void updateMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
+    public String updateMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
 
         // Null 체크
         if (meet == null) {
-            throw new IllegalArgumentException("MeetingDto is null");
+            throw new RuntimeException("Meeting data is null");
         }
 
         // MeetDto에서 mid 가져오기
@@ -231,10 +235,10 @@ public class MeetingDao {
             throw new RuntimeException("Document with mid " + mid + " not found");
         }
 
-        System.out.println("Meeting with mid " + mid + " updated successfully!");
+        return "Meeting with mid " + mid + " updated successfully!";
     }
 
-    public void addPlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
+    public String addPlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
         Query query = meetingsRef.whereEqualTo("mid", mid);
@@ -244,6 +248,7 @@ public class MeetingDao {
         if (!documents.isEmpty()) {
             DocumentSnapshot document = documents.get(0);
             MeetEntity meetEntity = document.toObject(MeetEntity.class);
+
             List<MeetingPlaceEntity> newLists = new ArrayList<>();
 
             for (MeetingPlaceDto placeDto : meetplace) {
@@ -268,6 +273,7 @@ public class MeetingDao {
 
             meetEntity.setLists(newLists);
             document.getReference().set(meetEntity);
+            return "Meeting created successfully!";
         } else {
             throw new RuntimeException("Document with mid " + mid + " not found");
         }
@@ -363,7 +369,7 @@ public class MeetingDao {
 //         }
 //     }
 
-    public void addUserToMeeting(int mid, List<UsersEntity> joiners) throws InterruptedException, ExecutionException {
+    public String addUserToMeeting(int mid, List<UsersEntity> joiners) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
         Query query = meetingsRef.whereEqualTo("mid", mid);
@@ -380,12 +386,13 @@ public class MeetingDao {
             }
             meetEntity.setMember(newMembers);
             document.getReference().set(meetEntity);
+            return "Meeting created successfully!";
         } else {
             throw new RuntimeException("Document with mid " + mid + " not found");
         }
     }
 
-    public void deleteMeeting(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
+    public String deleteMeeting(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
         Query query = meetingsRef.whereEqualTo("mid", meetEntity.getMid());
@@ -395,6 +402,7 @@ public class MeetingDao {
         if (!documents.isEmpty()) {
             DocumentSnapshot document = documents.get(0);
             document.getReference().delete();
+            return "Meeting deleted successfully!";
         } else {
             throw new RuntimeException("Document with mid " + meetEntity.getMid() + " not found");
         }

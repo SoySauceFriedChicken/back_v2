@@ -6,8 +6,10 @@ import java.util.concurrent.ExecutionException;
 
 import org.springframework.stereotype.Repository;
 
+import com.example.Foodle.dto.request.friend.FriendDto;
 import com.example.Foodle.entity.FriendEntity;
 import com.example.Foodle.entity.MeetEntity;
+import com.example.Foodle.entity.UsersEntity;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Firestore;
@@ -23,15 +25,43 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FriendDao {
     public static final String COLLECTION_NAME = "Friend";
+    public static final String USERS_COLLECTION_NAME = "Users";
 
-    public List<FriendEntity> getFriendsByUid(String uid) throws ExecutionException, InterruptedException {
-        Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", uid).get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-        List<FriendEntity> friends = new ArrayList<>();
+    private Firestore getFirestore() {
+        return FirestoreClient.getFirestore();
+    }
+
+    public List<FriendDto> getFriendsByUid(String uid) throws ExecutionException, InterruptedException {
+        Firestore db = getFirestore();
+        CollectionReference friendsRef = db.collection(COLLECTION_NAME);
+        Query query = friendsRef.whereEqualTo("uid", uid);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+        List<FriendDto> friendsWithUserDetails = new ArrayList<>();
         for (QueryDocumentSnapshot document : documents) {
-            friends.add(document.toObject(FriendEntity.class));
+            FriendEntity friendEntity = document.toObject(FriendEntity.class);
+            FriendDto friendDto = new FriendDto();
+    
+            log.info("User found: " + friendEntity.getUid());
+                Query userRef = db.collection(USERS_COLLECTION_NAME).whereEqualTo("uid", friendEntity.getFid());
+                
+                ApiFuture<QuerySnapshot> userSnapshot = userRef.get();
+                QuerySnapshot userDocument = userSnapshot.get();
+                
+                // Check if user document exists
+                if (!userDocument.isEmpty()) {
+                    // log.info("User found: " + userDocument.getDocuments().get(0).toObject(UsersEntity.class));
+                    UsersEntity userEntity = userDocument.getDocuments().get(0).toObject(UsersEntity.class);
+                    friendDto.setUser(userEntity);
+                    friendDto.setLike(friendEntity.getLike());
+                } else{
+                    log.info("User not found");
+                    
+                }
+            friendsWithUserDetails.add(friendDto);
         }
-        return friends;
+        friendsWithUserDetails.sort((f1, f2) -> f1.getUser().getUid().compareTo(f2.getUser().getUid()));
+        return friendsWithUserDetails;
     }
 }

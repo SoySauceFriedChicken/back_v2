@@ -96,10 +96,11 @@ public class PlaceListDao {
             // log.info("Meeting found: " + meetingDto);
         }
 
+        meetingDtos.sort((m1, m2) -> m1.getLid() - m2.getLid());
         return meetingDtos;
     }
 
-    public void createPlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
+    public String createPlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME)
                                              .orderBy("lid", Query.Direction.DESCENDING)
@@ -108,6 +109,10 @@ public class PlaceListDao {
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
         int size;
+        if(placeList.getUid() == null) {
+            log.info("uid is null");
+            return "uid is null";
+        }
         if (!documents.isEmpty()) {
             QueryDocumentSnapshot document = documents.get(0);
             size = document.getLong("lid").intValue();
@@ -119,6 +124,7 @@ public class PlaceListDao {
         placeList.setLid(size + 1);
         log.info("Saving meeting with lid " + placeList.getLid());
         db.collection(COLLECTION_NAME).document().set(placeList);
+        return "PlaceList created successfully!";
     }
 
     public void updatePlaceList(int lid, List<PlaceDto> placeList) throws InterruptedException, ExecutionException {

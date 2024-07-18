@@ -30,8 +30,8 @@ public class PlaceListServiceImplement extends PlaceListService {
     }
 
     @Override
-    public void createPlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
-        placeListDao.createPlaceList(placeList);
+    public String createPlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
+        return placeListDao.createPlaceList(placeList);
     }
     
 }

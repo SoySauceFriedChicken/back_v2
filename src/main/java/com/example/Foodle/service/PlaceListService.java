@@ -38,8 +38,8 @@ public class PlaceListService {
         return placeListDao.getPlaceListByLid(lid);
     }
 
-    public void createPlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
-        placeListDao.createPlaceList(placeList);
+    public String createPlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
+        return placeListDao.createPlaceList(placeList);
     }
 
     public void updatePlaceList(int lid, List<PlaceDto> placeList) throws InterruptedException, ExecutionException {

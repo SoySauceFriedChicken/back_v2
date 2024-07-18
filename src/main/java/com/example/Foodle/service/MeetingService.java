@@ -39,31 +39,31 @@ public class MeetingService {
         return meetingDao.getMeetingsByMid(mid);
     }
 
-    public void saveMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
-        meetingDao.saveMeet(meet);
+    public String saveMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
+        return meetingDao.saveMeet(meet);
     }
 
-    public void updateMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
-        meetingDao.updateMeet(meet);
+    public String updateMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
+        return meetingDao.updateMeet(meet);
     }
 
-    public void addPlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
-        meetingDao.addPlaceList(mid, meetplace);
+    public String addPlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
+        return meetingDao.addPlaceList(mid, meetplace);
     }
 
-    public void updatePlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
-        meetingDao.addPlaceList(mid, meetplace);
+    public String updatePlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
+        return meetingDao.addPlaceList(mid, meetplace);
     }
-    public void deletePlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
-        meetingDao.addPlaceList(mid, meetplace);
-    }
-
-    public void addUserToMeeting(int mid, List<UsersEntity>joiners) throws InterruptedException, ExecutionException {
-        meetingDao.addUserToMeeting(mid, joiners);
+    public String deletePlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
+        return meetingDao.addPlaceList(mid, meetplace);
     }
 
-    public void deleteMeeting(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
-        meetingDao.deleteMeeting(meetEntity);
+    public String addUserToMeeting(int mid, List<UsersEntity>joiners) throws InterruptedException, ExecutionException {
+        return meetingDao.addUserToMeeting(mid, joiners);
+    }
+
+    public String deleteMeeting(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
+        return meetingDao.deleteMeeting(meetEntity);
     }
 
 }

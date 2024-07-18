@@ -41,52 +41,9 @@ public class FriendService {
         return FirestoreClient.getFirestore();
     }
 
-    public List<FriendEntity> getFriendsByUid(String uid) throws ExecutionException, InterruptedException {
-        Firestore db = getFirestore();
-        CollectionReference friends = db.collection(COLLECTION_NAME);
-        Query query = friends.whereEqualTo("uid", uid); // Use the correct Query class
-        ApiFuture<QuerySnapshot> future = query.get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-        
-        List<FriendEntity> friendsByName = new ArrayList<>();
-        for (QueryDocumentSnapshot document : documents) {
-            friendsByName.add(document.toObject(FriendEntity.class));
-        }
-        return friendsByName;
-    }
-
     // 새로운 메서드
     public List<FriendDto> getFriendsWithUserDetails(String uid) throws ExecutionException, InterruptedException {
-        Firestore db = getFirestore();
-        CollectionReference friendsRef = db.collection(COLLECTION_NAME);
-        Query query = friendsRef.whereEqualTo("uid", uid);
-        ApiFuture<QuerySnapshot> querySnapshot = query.get();
-        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
-
-        List<FriendDto> friendsWithUserDetails = new ArrayList<>();
-        for (QueryDocumentSnapshot document : documents) {
-            FriendEntity friendEntity = document.toObject(FriendEntity.class);
-            FriendDto friendDto = new FriendDto();
-    
-            log.info("User found: " + friendEntity.getUid());
-                Query userRef = db.collection(USERS_COLLECTION_NAME).whereEqualTo("uid", friendEntity.getFid());
-                
-                ApiFuture<QuerySnapshot> userSnapshot = userRef.get();
-                QuerySnapshot userDocument = userSnapshot.get();
-                
-                // Check if user document exists
-                if (!userDocument.isEmpty()) {
-                    log.info("User found: " + userDocument.getDocuments().get(0).toObject(UsersEntity.class));
-                    UsersEntity userEntity = userDocument.getDocuments().get(0).toObject(UsersEntity.class);
-                    friendDto.setUser(userEntity);
-                    friendDto.setLike(friendEntity.getLike());
-                } else{
-                    log.info("User not found");
-                    
-                }
-            friendsWithUserDetails.add(friendDto);
-        }
-        return friendsWithUserDetails;
+        return friendDao.getFriendsByUid(uid);
     }
     // @Autowired
     // private FriendRepository friendRepository;

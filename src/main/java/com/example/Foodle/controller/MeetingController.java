@@ -60,8 +60,7 @@ public class MeetingController {
     public String createMeeting(@RequestBody @Valid NewMeetingDto newMeet) {
         MeetEntity meet = newMeet.toEntity();
         try {
-            meetingService.saveMeet(meet);
-            return "Meeting created successfully";
+            return meetingService.saveMeet(meet);
         } catch (Exception e) {
             e.printStackTrace();
             return "Error creating user";
@@ -72,8 +71,7 @@ public class MeetingController {
     public String updateMeeting(@RequestBody @Valid UpdateMeetingDto entity) {
         MeetEntity meet = entity.toEntity();
         try {
-            meetingService.updateMeet(meet);
-            return "Meeting updated successfully";
+            return meetingService.updateMeet(meet);
         } catch (Exception e) {
             e.printStackTrace();
             return "Error creating user";
@@ -81,7 +79,7 @@ public class MeetingController {
     }
 
     @PostMapping("/update/addPlace")
-    public ResponseEntity<String> addPlaceList(@RequestBody Map<String, Object> request) {
+    public String addPlaceList(@RequestBody Map<String, Object> request) {
         try {
             int mid = (int) request.get("mid");
             ObjectMapper objectMapper = new ObjectMapper();
@@ -94,12 +92,10 @@ public class MeetingController {
             }
 
             // 서비스 메서드 호출
-            meetingService.addPlaceList(mid, meetplace);
-
-            return ResponseEntity.ok("Place list updated successfully");
+            return meetingService.addPlaceList(mid, meetplace);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating place list");
+            return "Error adding place list";
         }
     }
 
@@ -137,7 +133,7 @@ public class MeetingController {
     
     // 약속에 유저 추가 + (삭제)
     @PostMapping("/update/updateJoiner")
-    public ResponseEntity<String> addUserToMeeting(@RequestBody Map<String, Object> entity) {
+    public String addUserToMeeting(@RequestBody Map<String, Object> entity) {
         try {
             int mid = (int) entity.get("mid");
             ObjectMapper objectMapper = new ObjectMapper();
@@ -149,12 +145,11 @@ public class MeetingController {
                 newUsers.add(joinerEntity);
             }
             // 서비스 메서드 호출
-            meetingService.addUserToMeeting(mid, newUsers);
-            return ResponseEntity.ok("User added to meeting successfully");
+            return meetingService.addUserToMeeting(mid, newUsers);
         }
         catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding user to meeting");
+            return "Error adding user to meeting";
         }
         
         
@@ -162,13 +157,12 @@ public class MeetingController {
 
     // 약속 삭제
     @PostMapping("/delete")
-    public ResponseEntity<String> deleteMeeting(@RequestBody MeetingDto entity) {
+    public String deleteMeeting(@RequestBody MeetingDto entity) {
         try {
-            meetingService.deleteMeeting(entity.toEntity());
-            return ResponseEntity.ok("Meeting deleted successfully");
+            return meetingService.deleteMeeting(entity.toEntity());
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting meeting");
+            return "Error deleting meeting";
         }
     }
     

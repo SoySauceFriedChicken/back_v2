@@ -53,8 +53,7 @@ public class PlaceListController {
     public String createPlaceList(@RequestBody @Valid PlaceListDto placeListDto) {
         PlaceListEntity placeList = placeListDto.toEntity();
         try {
-            placeListService.createPlaceList(placeList);
-            return "PlaceList created successfully";
+            return placeListService.createPlaceList(placeList);
         } catch (Exception e) {
             e.printStackTrace();
             return "Error creating PlaceList";

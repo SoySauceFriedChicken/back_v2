@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.Foodle.dao.FriendDao;
 import com.example.Foodle.dao.MeetingDao;
+import com.example.Foodle.dto.request.friend.FriendDto;
 import com.example.Foodle.entity.FriendEntity;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.service.FriendService;
@@ -20,7 +21,7 @@ public class FriendServiceImplement extends FriendService {
     private final FriendDao friendDao;
 
     @Override
-    public List<FriendEntity> getFriendsByUid(String uid) throws ExecutionException, InterruptedException {
+    public List<FriendDto> getFriendsWithUserDetails(String uid) throws ExecutionException, InterruptedException {
         return friendDao.getFriendsByUid(uid);
     }
 
