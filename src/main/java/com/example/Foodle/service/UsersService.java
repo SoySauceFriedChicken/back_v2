@@ -2,6 +2,7 @@ package com.example.Foodle.service;
 
 
 import com.example.Foodle.dao.UsersDao;
+import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.UsersEntity;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -30,11 +31,11 @@ public class UsersService {
         return FirestoreClient.getFirestore();
     }
 
-    public List<UsersEntity> getAllUsers() throws ExecutionException, InterruptedException {
+    public List<UsersDto> getAllUsers() throws ExecutionException, InterruptedException {
         return usersDao.getUsers();
     }
 
-    public UsersEntity findByUid(String uid) throws InterruptedException, ExecutionException {
+    public UsersDto findByUid(String uid) throws InterruptedException, ExecutionException {
         return usersDao.findByUid(uid);
     }
 
@@ -42,7 +43,7 @@ public class UsersService {
         usersDao.saveUser(user);
     }
 
-    public void updateUser(UsersEntity user) {
+    public void updateUser(UsersDto user) {
         usersDao.updateUser(user);
     }
     

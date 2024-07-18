@@ -6,5 +6,8 @@
 // import org.springframework.stereotype.Repository;
 
 // @Repository
-// public interface UsersRepository extends JpaRepository<UsersEntity, Integer> {
+// public interface UsersRepository extends JpaRepository<UsersEntity, String> {
+// boolean existsByUid(String uid);
+// UsersEntity findByUid(String uid);
+
 // }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Foodle.dto.request.user.NewUserDto;
 import com.example.Foodle.dto.request.user.UpdateUserDto;
+import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.UsersEntity;
 import com.example.Foodle.service.UsersService;
 
@@ -36,12 +37,12 @@ public class UsersController {
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAllUsers() throws ExecutionException, InterruptedException {
-        List<UsersEntity> list = usersService.getAllUsers();
+        List<UsersDto> list = usersService.getAllUsers();
         return ResponseEntity.ok().body(list);
     }
 
     @GetMapping("/profile")
-    public UsersEntity getuserprofile(@RequestParam String uid) throws ExecutionException, InterruptedException {
+    public UsersDto getuserprofile(@RequestParam String uid) throws ExecutionException, InterruptedException {
         return usersService.findByUid(uid);
     }
 
@@ -59,10 +60,9 @@ public class UsersController {
     }
 
     @PostMapping("/update")
-    public String updateUser(@RequestBody @Valid UpdateUserDto updateUserDto) {
-        UsersEntity user = updateUserDto.toEntity();
+    public String updateUser(@RequestBody @Valid UsersDto updateUserDto) {
         try {
-            usersService.updateUser(user);
+            usersService.updateUser(updateUserDto);
             return "User updated successfully";
         } catch (Exception e) {
             e.printStackTrace();

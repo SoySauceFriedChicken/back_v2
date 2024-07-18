@@ -1,4 +1,5 @@
-package com.example.Foodle.entity;
+package com.example.Foodle.dto.request.user;
+
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,24 +15,13 @@ import lombok.ToString;
 @Setter
 @ToString
 @AllArgsConstructor
-public class UsersEntity {
+public class UsersDto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String uid;
     private String name;
     private String nickName;
     private String profileImage;
-    private String type;
-    private String email;
-    private String role;
 
-    public UsersEntity(String uid, String name, String nickName, String profileImage) {
-        this.uid = uid;
-        this.name = name;
-        this.nickName = nickName;
-        this.profileImage = profileImage;
-        this.type = "";
-        this.email = "";
-        this.role = "USER";
-    }
+    
 }
