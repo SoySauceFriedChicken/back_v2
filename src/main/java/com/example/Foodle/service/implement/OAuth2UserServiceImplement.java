@@ -68,7 +68,7 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
             // log.error("OAuth2AuthenticationException: {}", e.getMessage(), e);
             throw e;
         } catch (Exception e) {
-            // log.error("Exception: {}", e.getMessage(), e);
+            //log.error("Exception: {}", e.getMessage(), e);
             throw new OAuth2AuthenticationException(null, e.getMessage(), e);
         }
 

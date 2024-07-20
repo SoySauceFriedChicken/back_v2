@@ -86,7 +86,8 @@ public class WebSecurityConfig {
             .authorizeRequests(requests -> {
                 log.info("Configuring Authorization Requests");
                 requests
-                    .requestMatchers("/", "api/**", "/api/v1/auth/**", "/oauth2/**", "/oauth2/callback/**", "/api/v1/auth/oauth2/**", "/v1/**").permitAll()
+                    .requestMatchers("/", "/api/**", "/api/v1/auth/**", "/oauth2/**", "/oauth2/callback/**", "/api/v1/auth/oauth2/**", "/v1/**", "/error").permitAll()
+                    .requestMatchers("/auth/oauth-response/**").permitAll()
                     // .requestMatchers("/api/v1/user/**").hasRole("USER")
                     // .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated();
@@ -120,12 +121,11 @@ public class WebSecurityConfig {
     class FailedAuthenticationEntryPoint implements AuthenticationEntryPoint {
         @Override
         public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+            log.info("FailedAuthenticationEntryPoint.commence called. Request URL: {}", request.getRequestURL());
             response.setContentType("application/json");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            log.info("FailedAuthenticationEntryPoint.commence called");
-
-            // {"code": "NP", "message":"No Permission"}
             response.getWriter().write("{\"code\": \"NP\", \"message\":\"No Permissions\"}");
         }
+
     }
 }
