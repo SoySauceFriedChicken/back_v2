@@ -35,10 +35,10 @@ public class PlaceDao {
         return list;
     }
 
-    private static final int MAX_DISTANCE = 3; // Levenshtein 거리 임계값 설정
+    private static final double SIMILARITY_THRESHOLD = 0.7; // 유사성 비율 임계값 (예: 70%)
 
     public List<PlaceDto> getPlaceByPlaceName(String placeName) throws ExecutionException, InterruptedException {
-        if(placeName == "") {
+        if (placeName.isEmpty()) {
             return new ArrayList<PlaceDto>();
         }
         Firestore db = FirestoreClient.getFirestore();
@@ -55,9 +55,14 @@ public class PlaceDao {
     }
 
     private boolean isSimilar(String source, String target) {
+        int distance = getLevenshteinDistance(source, target);
+        double similarity = 1.0 - ((double) distance / Math.max(source.length(), target.length()));
+        return similarity >= SIMILARITY_THRESHOLD;
+    }
+
+    private int getLevenshteinDistance(String source, String target) {
         LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
-        int distance = levenshteinDistance.apply(source, target);
-        return distance <= MAX_DISTANCE;
+        return levenshteinDistance.apply(source, target);
     }
 
     private boolean containsWord(String source, String target) {
@@ -65,15 +70,21 @@ public class PlaceDao {
     }
 
     private List<PlaceDto> sortPlacesBySimilarity(List<PlaceDto> places, String target) {
-        LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
         return places.stream()
                 .sorted((place1, place2) -> {
-                    int distance1 = levenshteinDistance.apply(place1.getPlaceName(), target);
-                    int distance2 = levenshteinDistance.apply(place2.getPlaceName(), target);
-                    return Integer.compare(distance1, distance2);
+                    double similarity1 = getSimilarity(place1.getPlaceName(), target);
+                    double similarity2 = getSimilarity(place2.getPlaceName(), target);
+                    return Double.compare(similarity2, similarity1); // 유사성이 높은 순으로 정렬
                 })
                 .collect(Collectors.toList());
     }
+
+    private double getSimilarity(String source, String target) {
+        int distance = getLevenshteinDistance(source, target);
+        return 1.0 - ((double) distance / Math.max(source.length(), target.length()));
+    }
+
+
 
     public List<PlaceDto> getPlaceByPlaceInfo(String placeName, Double latitude, Double longtitude) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
