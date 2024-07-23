@@ -87,12 +87,18 @@ public class PlaceDao {
     }
 
     public List<PlaceDto> getPlacesByCategory(String category) throws ExecutionException, InterruptedException {
+        if(category == "") {
+            return new ArrayList<PlaceDto>();
+        }
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("category", category).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         List<PlaceDto> places = new ArrayList<>();
         for (QueryDocumentSnapshot document : documents) {
-            places.add(document.toObject(PlaceDto.class));
+            PlaceDto place = document.toObject(PlaceDto.class);
+            if (containsWord(place.getCategory(), category)) {
+                places.add(place);
+            }
         }
         return places;
     }
