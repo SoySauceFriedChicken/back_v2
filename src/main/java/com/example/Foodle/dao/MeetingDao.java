@@ -274,60 +274,60 @@ public class MeetingDao {
 
             meetEntity.setLists(newLists);
             document.getReference().set(meetEntity);
-            return "Meeting created successfully!";
+            return "Meeting places Updated successfully!";
         } else {
             throw new RuntimeException("Document with mid " + mid + " not found");
         }
     }
 
-//     public void updatePlaceList(int mid, List<Map<String, Object>> meetplace) throws InterruptedException, ExecutionException {
-//         Firestore db = FirestoreClient.getFirestore();
-//         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
-//         Query query = meetingsRef.whereEqualTo("mid", mid);
-//         ApiFuture<QuerySnapshot> querySnapshot = query.get();
-//         List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+    //     public void updatePlaceList(int mid, List<Map<String, Object>> meetplace) throws InterruptedException, ExecutionException {
+    //         Firestore db = FirestoreClient.getFirestore();
+    //         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
+    //         Query query = meetingsRef.whereEqualTo("mid", mid);
+    //         ApiFuture<QuerySnapshot> querySnapshot = query.get();
+    //         List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
 
-//         if (!documents.isEmpty()) {
-//             DocumentSnapshot document = documents.get(0);
-//             MeetEntity meetEntity = document.toObject(MeetEntity.class);
+    //         if (!documents.isEmpty()) {
+    //             DocumentSnapshot document = documents.get(0);
+    //             MeetEntity meetEntity = document.toObject(MeetEntity.class);
 
-//             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-//             List<Map<String, Object>> lists = meetEntity.getLists() != null ? meetEntity.getLists() : new ArrayList<>();
-            
-//             for (Map<String, Object> place : meetplace) {
-//                 Object placeObject = place.get("place");
-//                 if (placeObject instanceof Map) {
-//                     Map<String, Object> placeMap = (Map<String, Object>) placeObject;
-//                     String pid = (String) placeMap.get("pid");
-//                     Object time = place.get("time");
-    
-//                     boolean updated = false;
-//                     for (Map<String, Object> existingPlace : lists) {
-//                         if (existingPlace.get("place").equals(pid)) {
-//                             existingPlace.put("time", time.toString());
-//                             updated = true;
-//                             break;
-//                         }
-//                     }
-    
-//                     if (!updated) {
-//                         Map<String, Object> newPlace = new HashMap<>();
-//                         newPlace.put("place", pid);
-//                         newPlace.put("time", time.toString());
-//                         lists.add(newPlace);
-//                     }
-//                 } else {
-//                     // Handle the error appropriately, e.g., log an error message or throw an exception
-//                     throw new RuntimeException("Expected a Map<String, Object> but got: " + placeObject.getClass().getName());
-//                 }
-//             }
-    
-//             meetEntity.setLists(lists);
-//             document.getReference().set(meetEntity);
-//         } else {
-//             throw new RuntimeException("Document with mid " + mid + " not found");
-//         }
-//     }
+    //             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+    //             List<Map<String, Object>> lists = meetEntity.getLists() != null ? meetEntity.getLists() : new ArrayList<>();
+                
+    //             for (Map<String, Object> place : meetplace) {
+    //                 Object placeObject = place.get("place");
+    //                 if (placeObject instanceof Map) {
+    //                     Map<String, Object> placeMap = (Map<String, Object>) placeObject;
+    //                     String pid = (String) placeMap.get("pid");
+    //                     Object time = place.get("time");
+        
+    //                     boolean updated = false;
+    //                     for (Map<String, Object> existingPlace : lists) {
+    //                         if (existingPlace.get("place").equals(pid)) {
+    //                             existingPlace.put("time", time.toString());
+    //                             updated = true;
+    //                             break;
+    //                         }
+    //                     }
+        
+    //                     if (!updated) {
+    //                         Map<String, Object> newPlace = new HashMap<>();
+    //                         newPlace.put("place", pid);
+    //                         newPlace.put("time", time.toString());
+    //                         lists.add(newPlace);
+    //                     }
+    //                 } else {
+    //                     // Handle the error appropriately, e.g., log an error message or throw an exception
+    //                     throw new RuntimeException("Expected a Map<String, Object> but got: " + placeObject.getClass().getName());
+    //                 }
+    //             }
+        
+    //             meetEntity.setLists(lists);
+    //             document.getReference().set(meetEntity);
+    //         } else {
+    //             throw new RuntimeException("Document with mid " + mid + " not found");
+    //         }
+    //     }
 
 //     public void deletePlaceList(int mid, List<Map<String, Object>> meetplace) throws InterruptedException, ExecutionException {
 //         Firestore db = FirestoreClient.getFirestore();

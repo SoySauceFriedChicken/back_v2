@@ -52,12 +52,12 @@ public class MeetingService {
         return meetingDao.addPlaceList(mid, meetplace);
     }
 
-    public String updatePlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
-        return meetingDao.addPlaceList(mid, meetplace);
-    }
-    public String deletePlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
-        return meetingDao.addPlaceList(mid, meetplace);
-    }
+    // public String updatePlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
+    //     return meetingDao.addPlaceList(mid, meetplace);
+    // }
+    // public String deletePlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
+    //     return meetingDao.addPlaceList(mid, meetplace);
+    // }
 
     public String addUserToMeeting(int mid, List<UsersEntity>joiners) throws InterruptedException, ExecutionException {
         return meetingDao.addUserToMeeting(mid, joiners);

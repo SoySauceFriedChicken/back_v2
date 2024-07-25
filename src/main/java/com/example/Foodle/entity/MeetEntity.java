@@ -27,8 +27,8 @@ import jakarta.persistence.Transient;
 
 @Entity
 @ToString
-@Getter
 @Setter
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

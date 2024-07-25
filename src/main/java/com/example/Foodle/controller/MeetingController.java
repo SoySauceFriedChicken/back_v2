@@ -81,7 +81,7 @@ public class MeetingController {
         }
     }
 
-    @PostMapping("/update/addPlace")
+    @PostMapping("/update/updatePlace")
     public String addPlaceList(@RequestBody Map<String, Object> request) {
         try {
             int mid = (int) request.get("mid");
