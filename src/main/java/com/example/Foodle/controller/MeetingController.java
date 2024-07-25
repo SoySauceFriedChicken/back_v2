@@ -22,6 +22,7 @@ import com.example.Foodle.dto.request.meeting.NewMeetingDto;
 import com.example.Foodle.dto.request.meeting.UpdateMeeingTimeDto;
 import com.example.Foodle.dto.request.meeting.UpdateMeetingDto;
 import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
+import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.UsersEntity;
 import com.example.Foodle.service.MeetingService;
@@ -142,9 +143,9 @@ public class MeetingController {
             ObjectMapper objectMapper = new ObjectMapper();
             List<Map<String, Object>> joiners = (List<Map<String, Object>>) entity.get("joiners");
 
-            List<UsersEntity> newUsers = new ArrayList<>();
+            List<UsersDto> newUsers = new ArrayList<>();
             for (Map<String, Object> joiner : joiners) {
-                UsersEntity joinerEntity = objectMapper.convertValue(joiner, UsersEntity.class);
+                UsersDto joinerEntity = objectMapper.convertValue(joiner, UsersDto.class);
                 newUsers.add(joinerEntity);
             }
             // 서비스 메서드 호출
@@ -156,6 +157,21 @@ public class MeetingController {
         }
         
         
+    }
+
+    // 약속에 유저 삭제
+    @PostMapping("/update/deleteJoiner")
+    public String deleteUserFromMeeting(@RequestBody Map<String, Object> entity) {
+        try {
+            int mid = (int) entity.get("mid");
+            UsersDto user = new ObjectMapper().convertValue(entity.get("joiner"), UsersDto.class);
+            // 서비스 메서드 호출
+            return meetingService.deleteUserFromMeeting(mid, user);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return "Error deleting user from meeting";
+        }
     }
 
     // 약속 시간 수정

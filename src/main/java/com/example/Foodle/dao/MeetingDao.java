@@ -370,7 +370,7 @@ public class MeetingDao {
 //         }
 //     }
 
-    public String addUserToMeeting(int mid, List<UsersEntity> joiners) throws InterruptedException, ExecutionException {
+    public String addUserToMeeting(int mid, List<UsersDto> joiners) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
         Query query = meetingsRef.whereEqualTo("mid", mid);
@@ -382,12 +382,33 @@ public class MeetingDao {
             MeetEntity meetEntity = document.toObject(MeetEntity.class);
             
             List<String> newMembers = new ArrayList<>();
-            for(UsersEntity joiner : joiners) {
+            for(UsersDto joiner : joiners) {
                 newMembers.add(joiner.getUid());
             }
             meetEntity.setMember(newMembers);
             document.getReference().set(meetEntity);
             return "Meeting created successfully!";
+        } else {
+            throw new RuntimeException("Document with mid " + mid + " not found");
+        }
+    }
+
+    // 유저 삭제
+    public String deleteUserFromMeeting(int mid, UsersDto joiner) throws InterruptedException, ExecutionException {
+        Firestore db = FirestoreClient.getFirestore();
+        CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
+        Query query = meetingsRef.whereEqualTo("mid", mid);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+        if (!documents.isEmpty()) {
+            DocumentSnapshot document = documents.get(0);
+            MeetEntity meetEntity = document.toObject(MeetEntity.class);
+            List<String> members = meetEntity.getMember();
+            members.remove(joiner.getUid());
+            meetEntity.setMember(members);
+            document.getReference().set(meetEntity);
+            return "Delete Joiner successfully!";
         } else {
             throw new RuntimeException("Document with mid " + mid + " not found");
         }
