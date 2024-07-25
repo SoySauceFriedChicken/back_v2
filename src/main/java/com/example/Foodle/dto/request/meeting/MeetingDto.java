@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
 import com.example.Foodle.dto.request.place.PlaceDto;
+import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.MeetingPlaceEntity;
 import com.example.Foodle.entity.MeetingPlaceInfoEntity;
@@ -32,7 +33,7 @@ public class MeetingDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "UTC")
     private Date date;
 
-    private final List<UsersEntity> joiners;
+    private final List<UsersDto> joiners;
 
     private final List<MeetingPlaceDto> places;
     
@@ -46,7 +47,7 @@ public class MeetingDto {
     }
 
     // 생성자
-    public MeetingDto(int mid, String name, Date date, List<MeetingPlaceDto> places, List<UsersEntity> joiners) {
+    public MeetingDto(int mid, String name, Date date, List<MeetingPlaceDto> places, List<UsersDto> joiners) {
         this.mid = mid;
         this.name = name;
         this.date = date;
@@ -57,7 +58,7 @@ public class MeetingDto {
 
     public MeetEntity toEntity() {
         List<String> joinersIds = new ArrayList<>();
-        for (UsersEntity user : joiners) {
+        for (UsersDto user : joiners) {
             joinersIds.add(user.getUid());
         }
 

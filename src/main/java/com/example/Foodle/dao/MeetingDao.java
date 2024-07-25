@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import com.example.Foodle.dto.request.meeting.MeetingDto;
 import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
 import com.example.Foodle.dto.request.place.PlaceDto;
+import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.MeetingPlaceEntity;
 import com.example.Foodle.entity.MeetingPlaceInfoEntity;
@@ -93,7 +94,7 @@ public class MeetingDao {
             MeetEntity meetEntity = document.toObject(MeetEntity.class);
 
             List<String> memberIds = meetEntity.getMember();
-            List<UsersEntity> joiners = new ArrayList<>();
+            List<UsersDto> joiners = new ArrayList<>();
 
             for (String memberId : memberIds) {
                 Query userRef = db.collection(USERS_COLLECTION_NAME).whereEqualTo("uid", memberId);
@@ -101,8 +102,8 @@ public class MeetingDao {
                 QuerySnapshot userSnapshot = userSnapshotFuture.get();
 
                 if (!userSnapshot.isEmpty()) {
-                    UsersEntity userEntity = userSnapshot.getDocuments().get(0).toObject(UsersEntity.class);
-                    joiners.add(userEntity);
+                    UsersDto usersDto = userSnapshot.getDocuments().get(0).toObject(UsersDto.class);
+                    joiners.add(usersDto);
                 } else {
                     log.info("User with uid " + memberId + " not found");
                 }
@@ -407,7 +408,7 @@ public class MeetingDao {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
             meetEntity.setDate(formatter.format(zonedDateTime));
             document.getReference().set(meetEntity);
-            return "Meeting Time Updates successfully!";
+            return "Meeting Time Updated successfully!";
         } else {
             throw new RuntimeException("Document with mid " + mid + " not found");
         }
