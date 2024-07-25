@@ -392,6 +392,27 @@ public class MeetingDao {
         }
     }
 
+    // 미팅 시간 업데이트
+    public String updateTime(int mid, Date time) throws InterruptedException, ExecutionException {
+        Firestore db = FirestoreClient.getFirestore();
+        CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
+        Query query = meetingsRef.whereEqualTo("mid", mid);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+        if (!documents.isEmpty()) {
+            DocumentSnapshot document = documents.get(0);
+            MeetEntity meetEntity = document.toObject(MeetEntity.class);
+            ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(time.toInstant(), ZoneId.of("UTC"));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
+            meetEntity.setDate(formatter.format(zonedDateTime));
+            document.getReference().set(meetEntity);
+            return "Meeting Time Updates successfully!";
+        } else {
+            throw new RuntimeException("Document with mid " + mid + " not found");
+        }
+    }
+
     public String deleteMeeting(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);

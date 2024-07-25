@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Foodle.dto.request.meeting.MeetingDto;
 import com.example.Foodle.dto.request.meeting.NewMeetingDto;
+import com.example.Foodle.dto.request.meeting.UpdateMeeingTimeDto;
 import com.example.Foodle.dto.request.meeting.UpdateMeetingDto;
 import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
 import com.example.Foodle.entity.MeetEntity;
@@ -31,6 +32,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Date;
 
 
 @RestController
@@ -153,6 +156,17 @@ public class MeetingController {
         }
         
         
+    }
+
+    // 약속 시간 수정
+    @PostMapping("/update/updateTime")
+    public String updateTime(@RequestBody UpdateMeeingTimeDto entity) {
+        try {
+            return meetingService.updateTime(entity.getMid(), entity.getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error updating meeting time";
+        }
     }
 
     // 약속 삭제

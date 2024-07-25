@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.Date;
 
 @Slf4j
 public class MeetingService {
@@ -60,6 +61,10 @@ public class MeetingService {
 
     public String addUserToMeeting(int mid, List<UsersEntity>joiners) throws InterruptedException, ExecutionException {
         return meetingDao.addUserToMeeting(mid, joiners);
+    }
+
+    public String updateTime(int mid, Date time) throws InterruptedException, ExecutionException {
+        return meetingDao.updateTime(mid, time);
     }
 
     public String deleteMeeting(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
