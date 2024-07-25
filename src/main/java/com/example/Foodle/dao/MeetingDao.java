@@ -178,7 +178,7 @@ public class MeetingDao {
         int size;
         if (!documents.isEmpty()) {
             QueryDocumentSnapshot document = documents.get(0);
-            if(document.getLong("member") == null) {
+            if(document.get("member") == null) {
                 return "joiners is null";
             }
             size =  document.getLong("mid").intValue();
