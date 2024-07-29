@@ -14,6 +14,7 @@ java {
 
 repositories {
 	mavenCentral()
+	google()
 }
 
 dependencies {
@@ -42,6 +43,9 @@ dependencies {
 	//implementation 'mysql:mysql-connector-java'
 
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	implementation 'com.google.firebase:firebase-messaging:23.0.5'
+	implementation  group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.2'
 
 }
 

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,11 +46,11 @@ public class MeetingService {
         return meetingDao.saveMeet(meet);
     }
 
-    public String updateMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
+    public String updateMeet(MeetEntity meet) throws InterruptedException, ExecutionException, IOException {
         return meetingDao.updateMeet(meet);
     }
 
-    public String addPlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
+    public String addPlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException, IOException {
         return meetingDao.addPlaceList(mid, meetplace);
     }
 
@@ -60,7 +61,7 @@ public class MeetingService {
     //     return meetingDao.addPlaceList(mid, meetplace);
     // }
 
-    public String addUserToMeeting(int mid, List<UsersDto>joiners) throws InterruptedException, ExecutionException {
+    public String addUserToMeeting(int mid, List<UsersDto>joiners) throws InterruptedException, ExecutionException, IOException {
         return meetingDao.addUserToMeeting(mid, joiners);
     }
 
@@ -68,7 +69,7 @@ public class MeetingService {
         return meetingDao.deleteUserFromMeeting(mid, joiner);
     }
 
-    public String updateTime(int mid, Date time) throws InterruptedException, ExecutionException {
+    public String updateTime(int mid, Date time) throws InterruptedException, ExecutionException, IOException {
         return meetingDao.updateTime(mid, time);
     }
 

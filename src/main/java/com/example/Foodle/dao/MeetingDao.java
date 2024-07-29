@@ -27,9 +27,13 @@ import com.example.Foodle.entity.MeetingPlaceEntity;
 import com.example.Foodle.entity.MeetingPlaceInfoEntity;
 import com.example.Foodle.entity.PlaceEntity;
 import com.example.Foodle.entity.UsersEntity;
+import com.example.Foodle.service.AdminService;
+import com.example.Foodle.service.FirestoreService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Query;
@@ -37,14 +41,21 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.cloud.firestore.Transaction;
+import com.google.cloud.firestore.Transaction.Function;
 import com.google.protobuf.ByteString;
 
+import io.jsonwebtoken.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 
 @Repository
 @Slf4j
 public class MeetingDao {
+    @Autowired
+    private AdminService adminService;
     private MeetingDto meetingDto;
+
+    // private Firestore firestore = FirestoreClient.getFirestore();
 
     public static final String COLLECTION_NAME = "Meet";
     public static final String USERS_COLLECTION_NAME = "Users";
@@ -60,6 +71,39 @@ public class MeetingDao {
         }
         return placeDtos;
     }
+
+    // /**
+    //  * 업데이트를 트랜잭션으로 처리하는 메서드
+    //  * 
+    //  * @param mid 업데이트할 미팅의 ID
+    //  * @param updates 업데이트할 데이터
+    //  * @throws Exception 예외 처리
+    //  */
+    // public void updateMeetingTransaction(int meetingId, Map<String, Object> updates) throws Exception {
+    //     ApiFuture<Void> transactionFuture = firestore.runTransaction(new Transaction.Function<Void>() {
+    //         @Override
+    //         public Void updateCallback(Transaction transaction) throws Exception {
+    //             CollectionReference meetingsRef = firestore.collection(COLLECTION_NAME);
+    //             Query query = meetingsRef.whereEqualTo("mid", meetingId);
+    //             QuerySnapshot querySnapshot = transaction.get(query).get();
+
+    //             if (!querySnapshot.isEmpty()) {
+    //                 DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+    //                 DocumentReference docRef = document.getReference();
+    //                 transaction.update(docRef, updates);
+    //             } else {
+    //                 throw new RuntimeException("Document with mid " + meetingId + " not found");
+    //             }
+    //             return null;
+    //         }
+    //     });
+
+    //     try {
+    //         transactionFuture.get();
+    //     } catch (InterruptedException | ExecutionException e) {
+    //         throw new RuntimeException("Transaction failed: " + e.getMessage());
+    //     }
+    // }
 
     public List<MeetingDto> getMeeting() throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
@@ -196,7 +240,41 @@ public class MeetingDao {
         // log.info("Meeting saved successfully!");
     }
 
+
+    /*
     public String updateMeet(MeetEntity meet) throws InterruptedException, ExecutionException {
+        Firestore db = FirestoreClient.getFirestore();
+
+        ApiFuture<Void> transactionFuture = db.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void updateCallback(Transaction transaction) throws Exception {
+                int mid = meet.getMid();
+                CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
+                Query query = meetingsRef.whereEqualTo("mid", mid);
+                QuerySnapshot querySnapshot = transaction.get(query).get();
+
+                if (!querySnapshot.isEmpty()) {
+                    DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                    DocumentReference docRef = document.getReference();
+                    transaction.set(docRef, meet);
+                } else {
+                    throw new RuntimeException("Document with mid " + mid + " not found");
+                }
+                return null;
+            }
+        });
+
+        try {
+            transactionFuture.get();
+            return "Meeting with mid " + meet.getMid() + " updated successfully!";
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Transaction failed: " + e.getMessage());
+        }
+    }
+
+     */
+
+    public String updateMeet(MeetEntity meet) throws InterruptedException, ExecutionException, java.io.IOException {
         Firestore db = FirestoreClient.getFirestore();
 
         // Null 체크
@@ -231,6 +309,21 @@ public class MeetingDao {
                 ApiFuture<WriteResult> updateFuture = document.getReference().set(newMeetEntity);
                 // 업데이트가 완료될 때까지 대기
                 updateFuture.get();
+
+                FirestoreService firestoreService = new FirestoreService();
+
+                // 예시로 targetToken, title, body, id, isEnd를 설정
+                String targetToken = firestoreService.getFcmToken(meet.getMember().get(1)); // 실제 토큰으로 교체해야 함
+                String title = "Meeting Updated";
+                String body = "Meeting with ID " + mid + " has been updated";
+                String id = String.valueOf(mid);
+                String isEnd = "false";
+
+                try {
+                    adminService.sendPushMessage(targetToken, title, body, id, isEnd);
+                } catch (IOException | JsonProcessingException e) {
+                    log.error("Failed to send push message", e);
+                }
             }
         } else {
             throw new RuntimeException("Document with mid " + mid + " not found");
@@ -239,7 +332,7 @@ public class MeetingDao {
         return "Meeting with mid " + mid + " updated successfully!";
     }
 
-    public String addPlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException {
+    public String addPlaceList(int mid, List<MeetingPlaceDto> meetplace) throws InterruptedException, ExecutionException, java.io.IOException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
         Query query = meetingsRef.whereEqualTo("mid", mid);
@@ -274,6 +367,22 @@ public class MeetingDao {
 
             meetEntity.setLists(newLists);
             document.getReference().set(meetEntity);
+
+            FirestoreService firestoreService = new FirestoreService();
+
+            // 예시로 targetToken, title, body, id, isEnd를 설정
+            String targetToken = firestoreService.getFcmToken(meetEntity.getMember().get(1)); // 실제 토큰으로 교체해야 함
+            String title = "Meeting Updated";
+            String body = "Meeting with ID " + mid + " has been updated - new place added";
+            String id = String.valueOf(mid);
+            String isEnd = "false";
+
+            try {
+                adminService.sendPushMessage(targetToken, title, body, id, isEnd);
+            } catch (IOException | JsonProcessingException e) {
+                log.error("Failed to send push message", e);
+            }
+            
             return "Meeting places Updated successfully!";
         } else {
             throw new RuntimeException("Document with mid " + mid + " not found");
@@ -370,7 +479,7 @@ public class MeetingDao {
 //         }
 //     }
 
-    public String addUserToMeeting(int mid, List<UsersDto> joiners) throws InterruptedException, ExecutionException {
+    public String addUserToMeeting(int mid, List<UsersDto> joiners) throws InterruptedException, ExecutionException, java.io.IOException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
         Query query = meetingsRef.whereEqualTo("mid", mid);
@@ -387,6 +496,21 @@ public class MeetingDao {
             }
             meetEntity.setMember(newMembers);
             document.getReference().set(meetEntity);
+
+            FirestoreService firestoreService = new FirestoreService();
+
+            // 예시로 targetToken, title, body, id, isEnd를 설정
+            String targetToken = firestoreService.getFcmToken(joiners.get(1).getUid()); // 실제 토큰으로 교체해야 함
+            String title = "Meeting Updated";
+            String body = "Meeting with ID " + mid + " has been updated - new joiners added";
+            String id = String.valueOf(mid);
+            String isEnd = "false";
+
+            try {
+                adminService.sendPushMessage(targetToken, title, body, id, isEnd);
+            } catch (IOException | JsonProcessingException e) {
+                log.error("Failed to send push message", e);
+            }
             return "Meeting created successfully!";
         } else {
             throw new RuntimeException("Document with mid " + mid + " not found");
@@ -415,7 +539,7 @@ public class MeetingDao {
     }
 
     // 미팅 시간 업데이트
-    public String updateTime(int mid, Date time) throws InterruptedException, ExecutionException {
+    public String updateTime(int mid, Date time) throws InterruptedException, ExecutionException, java.io.IOException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
         Query query = meetingsRef.whereEqualTo("mid", mid);
@@ -429,6 +553,22 @@ public class MeetingDao {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
             meetEntity.setDate(formatter.format(zonedDateTime));
             document.getReference().set(meetEntity);
+
+            FirestoreService firestoreService = new FirestoreService();
+
+            // 예시로 targetToken, title, body, id, isEnd를 설정
+            String targetToken = firestoreService.getFcmToken(meetEntity.getMember().get(1)); // 실제 토큰으로 교체해야 함
+            String title = "Meeting Updated";
+            String body = "Meeting with ID " + mid + " has been updated - time changed";
+            String id = String.valueOf(mid);
+            String isEnd = "false";
+
+            try {
+                adminService.sendPushMessage(targetToken, title, body, id, isEnd);
+            } catch (IOException | JsonProcessingException e) {
+                log.error("Failed to send push message", e);
+            }
+            
             return "Meeting Time Updated successfully!";
         } else {
             throw new RuntimeException("Document with mid " + mid + " not found");
