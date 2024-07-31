@@ -46,7 +46,7 @@ public class PlaceListDao {
     public List<PlaceListDto> getUserPlaceLists(String uid) throws ExecutionException, InterruptedException {
         List<PlaceListDto> list = new ArrayList<>();
         Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).get();
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME).whereEqualTo("uid", uid).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         return convertToMeetingDtos(db, documents);
     }
