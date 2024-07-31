@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutionException;
 import org.springframework.stereotype.Repository;
 
 import com.example.Foodle.dto.request.friend.FriendDto;
+import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.FriendEntity;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.UsersEntity;
@@ -52,8 +53,8 @@ public class FriendDao {
                 // Check if user document exists
                 if (!userDocument.isEmpty()) {
                     // log.info("User found: " + userDocument.getDocuments().get(0).toObject(UsersEntity.class));
-                    UsersEntity userEntity = userDocument.getDocuments().get(0).toObject(UsersEntity.class);
-                    friendDto.setUser(userEntity);
+                    UsersDto usersDto = userDocument.getDocuments().get(0).toObject(UsersDto.class);
+                    friendDto.setUser(usersDto);
                     friendDto.setLike(friendEntity.getLike());
                 } else{
                     log.info("User not found");

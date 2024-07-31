@@ -48,14 +48,29 @@ public class FriendService {
     // @Autowired
     // private FriendRepository friendRepository;
 
-    public void createFriend(String uid, String fid) {
+    public void createFriend(String uid, String fid) throws InterruptedException, ExecutionException {
         Firestore db = getFirestore();
-        // Create references for each friend relationship
-        DocumentReference friendRef1 = db.collection(COLLECTION_NAME).document();
+
+        // 이미 친구로 등록되어 있는지 확인
+        DocumentReference friendRef1 = db.collection(COLLECTION_NAME)
+                .whereEqualTo("uid", uid)
+                .whereEqualTo("fid", fid)
+                .limit(1)  // Limit to one document (assuming uid, fid combination is unique)
+                .get()
+                .get()
+                .getDocuments()
+                .get(0).getReference();
+        
+        // 이미 친구로 등록되어 있는 경우
+        if (friendRef1 != null) {
+            return;
+        }
         DocumentReference friendRef2 = db.collection(COLLECTION_NAME).document();
 
-        FriendEntity friendEntity1 = new FriendEntity(uid, false, fid);
-        FriendEntity friendEntity2 = new FriendEntity(fid, false, uid);
+        UsersDao usersDao = new UsersDao();
+
+        FriendDto friendEntity1 = new FriendDto(usersDao.findByUid(uid), false);
+        FriendDto friendEntity2 = new FriendDto(usersDao.findByUid(fid), false);
 
         // Create two separate futures for each write operation
         ApiFuture<WriteResult> future1 = friendRef1.set(friendEntity1);
