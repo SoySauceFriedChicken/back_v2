@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
+import java.util.HashMap;
 
 
 @RestController
@@ -61,34 +62,91 @@ public class MeetingController {
     
 
     @PostMapping(path = "/create", consumes = "application/json", produces = "application/json")
-    public String createMeeting(@RequestBody @Valid NewMeetingDto newMeet) {
+    public ResponseEntity<Map<String, Object>> createMeeting(@RequestBody @Valid NewMeetingDto newMeet) {
         MeetEntity meet = newMeet.toEntity();
+        Map<String, Object> response = new HashMap<>();
         try {
-            return meetingService.saveMeet(meet);
+            String result = meetingService.saveMeet(meet);
+            if ("Meeting created successfully!".equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if ("joiners is null".equals(result)) {
+                response.put("success", false);
+                response.put("error", "Joiners are null");
+                response.put("message", result);
+                response.put("status", HttpStatus.BAD_REQUEST.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            } else {
+                response.put("success", false);
+                response.put("error", "Unexpected error");
+                response.put("message", result);
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error creating user";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error creating user");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/update")
-    public String updateMeeting(@RequestBody @Valid UpdateMeetingDto entity) {
+    public ResponseEntity<Map<String, Object>> updateMeeting(@RequestBody @Valid UpdateMeetingDto entity) {
         MeetEntity meet = entity.toEntity();
+        Map<String, Object> response = new HashMap<>();
         try {
-            return meetingService.updateMeet(meet);
+            String result = meetingService.updateMeet(meet);
+            if (("Meeting with mid " + meet.getMid() + " updated successfully!").equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if (("Document with mid " + meet.getMid() + " not found").equals(result)) {
+                response.put("success", false);
+                response.put("error", "Document not found");
+                response.put("message", result);
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("success", false);
+                response.put("error", "Unexpected error");
+                response.put("message", result);
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error creating user";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error updating meeting");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/update/updatePlace")
-    public String addPlaceList(@RequestBody Map<String, Object> request) {
+    public ResponseEntity<Map<String, Object>> addPlaceList(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
         try {
             int mid = (int) request.get("mid");
             ObjectMapper objectMapper = new ObjectMapper();
             List<Map<String, Object>> placesMapList = (List<Map<String, Object>>) request.get("places");
-            
+
             List<MeetingPlaceDto> meetplace = new ArrayList<>();
             for (Map<String, Object> placeMap : placesMapList) {
                 MeetingPlaceDto placeDto = objectMapper.convertValue(placeMap, MeetingPlaceDto.class);
@@ -96,10 +154,37 @@ public class MeetingController {
             }
 
             // 서비스 메서드 호출
-            return meetingService.addPlaceList(mid, meetplace);
+            String result = meetingService.addPlaceList(mid, meetplace);
+            if ("Meeting places Updated successfully!".equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if (("Document with mid " + mid + " not found").equals(result)) {
+                response.put("success", false);
+                response.put("error", "Document not found");
+                response.put("message", result);
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("success", false);
+                response.put("error", "Unexpected error");
+                response.put("message", result);
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error adding place list";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error adding place list");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -135,9 +220,11 @@ public class MeetingController {
     //     }
     // }
     
-    // 약속에 유저 추가 + (삭제)
+    
+
     @PostMapping("/update/updateJoiner")
-    public String addUserToMeeting(@RequestBody Map<String, Object> entity) {
+    public ResponseEntity<Map<String, Object>> addUserToMeeting(@RequestBody Map<String, Object> entity) {
+        Map<String, Object> response = new HashMap<>();
         try {
             int mid = (int) entity.get("mid");
             ObjectMapper objectMapper = new ObjectMapper();
@@ -149,53 +236,154 @@ public class MeetingController {
                 newUsers.add(joinerEntity);
             }
             // 서비스 메서드 호출
-            return meetingService.addUserToMeeting(mid, newUsers);
-        }
-        catch (Exception e) {
+            String result = meetingService.addUserToMeeting(mid, newUsers);
+            if ("Meeting created successfully!".equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if (("Document with mid " + mid + " not found").equals(result)) {
+                response.put("success", false);
+                response.put("error", "Document not found");
+                response.put("message", result);
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("success", false);
+                response.put("error", "Unexpected error");
+                response.put("message", result);
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            return "Error adding user to meeting";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error adding user to meeting");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
-        
     }
 
-    // 약속에 유저 삭제
     @PostMapping("/update/deleteJoiner")
-    public String deleteUserFromMeeting(@RequestBody Map<String, Object> entity) {
+    public ResponseEntity<Map<String, Object>> deleteUserFromMeeting(@RequestBody Map<String, Object> entity) {
+        Map<String, Object> response = new HashMap<>();
         try {
             int mid = (int) entity.get("mid");
             UsersDto user = new ObjectMapper().convertValue(entity.get("joiner"), UsersDto.class);
             // 서비스 메서드 호출
-            return meetingService.deleteUserFromMeeting(mid, user);
-        }
-        catch (Exception e) {
+            String result = meetingService.deleteUserFromMeeting(mid, user);
+            if ("Meeting updated successfully!".equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if (("Document with mid " + mid + " not found").equals(result)) {
+                response.put("success", false);
+                response.put("error", "Document not found");
+                response.put("message", result);
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("success", false);
+                response.put("error", "Unexpected error");
+                response.put("message", result);
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            return "Error deleting user from meeting";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error deleting user from meeting");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // 약속 시간 수정
     @PostMapping("/update/updateTime")
-    public String updateTime(@RequestBody UpdateMeeingTimeDto entity) {
+    public ResponseEntity<Map<String, Object>> updateTime(@RequestBody UpdateMeeingTimeDto entity) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            return meetingService.updateTime(entity.getMid(), entity.getTime());
+            String result = meetingService.updateTime(entity.getMid(), entity.getTime());
+            if ("Meeting updated successfully!".equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if (("Document with mid " + entity.getMid() + " not found").equals(result)) {
+                response.put("success", false);
+                response.put("error", "Document not found");
+                response.put("message", result);
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("success", false);
+                response.put("error", "Unexpected error");
+                response.put("message", result);
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error updating meeting time";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error updating meeting time");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // 약속 삭제
     @PostMapping("/delete")
-    public String deleteMeeting(@RequestBody MeetingDto entity) {
+    public ResponseEntity<Map<String, Object>> deleteMeeting(@RequestBody MeetingDto entity) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            return meetingService.deleteMeeting(entity.toEntity());
+            String result = meetingService.deleteMeeting(entity.toEntity());
+            if ("Meeting deleted successfully!".equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if (("Document with mid " + entity.getMid() + " not found").equals(result)) {
+                response.put("success", false);
+                response.put("error", "Document not found");
+                response.put("message", result);
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("success", false);
+                response.put("error", "Unexpected error");
+                response.put("message", result);
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error deleting meeting";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error deleting meeting");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    
-
 }

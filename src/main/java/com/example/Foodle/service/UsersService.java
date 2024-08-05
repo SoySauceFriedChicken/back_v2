@@ -39,13 +39,15 @@ public class UsersService {
         return usersDao.findByUid(uid);
     }
 
-    public void saveUser(UsersEntity user) {
-        usersDao.saveUser(user);
+    public String saveUser(UsersEntity user) {
+        return usersDao.saveUser(user);
     }
 
-    public void updateUser(UsersDto user) {
-        usersDao.updateUser(user);
+    public String updateUser(UsersDto user) {
+        return usersDao.updateUser(user);
     }
     
-
+    public String deleteUser(String uid) {
+        return usersDao.deleteUser(uid);
+    }
 }

@@ -63,17 +63,18 @@ public class UsersDao {
         }
     }
     
-    public void saveUser(UsersEntity user) {
+    public String saveUser(UsersEntity user) {
         Firestore db = FirestoreClient.getFirestore();
         if(db.collection(COLLECTION_NAME).whereEqualTo("uid", user.getUid()) != null) {
-            log.info("User already exists!");
-            return;
+            db.collection(COLLECTION_NAME).document().set(user); // 자동 생성된 ID를 사용
+            log.info("User saved successfully!");
+            return "User saved successfully!";
         }
-        db.collection(COLLECTION_NAME).document().set(user); // 자동 생성된 ID를 사용
-        log.info("User saved successfully!");
+        log.info("User already exists!");
+        return "User already exists!";
     }
     
-    public void updateUser(UsersDto usersDto) {
+    public String updateUser(UsersDto usersDto) {
         Firestore db = FirestoreClient.getFirestore();
 
         // Find document based on uid
@@ -90,17 +91,47 @@ public class UsersDao {
                 ApiFuture<WriteResult> future = docRef.set(convertDtoToEntity(usersDto), SetOptions.merge());
                 WriteResult result = future.get();
                 log.info("Update time : " + result.getUpdateTime());
+                return "User updated successfully!";
             } else {
                 // Document does not exist, handle accordingly
                 log.error("Document with uid {} not found.", usersDto.getUid());
+                return "no user found";
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error updating user with uid " + usersDto.getUid(), e);
+            return "error updating user";
         }
     }
 
     private UsersEntity convertDtoToEntity(UsersDto usersDto) {
         return new UsersEntity(usersDto.getUid(), usersDto.getName(), usersDto.getNickName(), usersDto.getProfileImage());
+    }
+
+    public String deleteUser(String uid) {
+        Firestore db = FirestoreClient.getFirestore();
+        CollectionReference users = db.collection(COLLECTION_NAME);
+        Query query = users.whereEqualTo("uid", uid);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+
+        try {
+            List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+            if (!documents.isEmpty()) {
+                // Document exists, delete it
+                DocumentReference docRef = documents.get(0).getReference();
+                ApiFuture<WriteResult> future = docRef.delete();
+                WriteResult result = future.get();
+                log.info("Delete time : " + result.getUpdateTime());
+                return "User deleted successfully!";
+            } else {
+                // Document does not exist, handle accordingly
+                log.error("Document with uid {} not found.", uid);
+                return "no user found";
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("Error deleting user with uid " + uid, e);
+            return "error deleting user";
+        }
     }
     
 }

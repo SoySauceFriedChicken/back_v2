@@ -127,7 +127,7 @@ public class PlaceListDao {
         return "PlaceList created successfully!";
     }
 
-    public void updatePlaceList(int lid, List<PlaceDto> placeList) throws InterruptedException, ExecutionException {
+    public String updatePlaceList(int lid, List<PlaceDto> placeList) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference placeRef = db.collection(COLLECTION_NAME);
         Query query = placeRef.whereEqualTo("lid", lid);
@@ -149,13 +149,15 @@ public class PlaceListDao {
             }
             placeListEntity.setPlaces(places);
             document.getReference().set(placeListEntity);
+            return "PlaceList updated successfully!";
         }
         else {
-            log.info("PlaceList with lid " + lid + " not found");
+            // log.info("PlaceList with lid " + lid + " not found");
+            return "PlaceList with lid " + lid + " not found";
         }
     }
 
-    public void deletePlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
+    public String deletePlaceList(PlaceListEntity placeList) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference placeRef = db.collection(COLLECTION_NAME);
         Query query = placeRef.whereEqualTo("lid", placeList.getLid());
@@ -165,9 +167,11 @@ public class PlaceListDao {
         if(!documents.isEmpty()) {
             DocumentSnapshot document = documents.get(0);
             document.getReference().delete();
+            return "PlaceList deleted successfully!";
         }
         else {
-            log.info("PlaceList with lid " + placeList.getLid() + " not found");
+            // log.info("PlaceList with lid " + placeList.getLid() + " not found");
+            return "PlaceList with lid " + placeList.getLid() + " not found";
         }
     }
 }

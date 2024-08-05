@@ -1,9 +1,12 @@
 package com.example.Foodle.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,33 +45,142 @@ public class UsersController {
     }
 
     @GetMapping("/profile")
-    public UsersDto getuserprofile(@RequestParam String uid) throws ExecutionException, InterruptedException {
-        return usersService.findByUid(uid);
+    public ResponseEntity<Map<String, Object>> getUserProfile(@RequestParam String uid) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            UsersDto user = usersService.findByUid(uid);
+            if (user != null) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", "User profile retrieved successfully");
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", user);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.put("success", false);
+                response.put("error", "User not found");
+                response.put("message", "No user found with the provided UID");
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error retrieving user profile");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/create")
-    public String createUser(@RequestBody @Valid NewUserDto newUserDto) {
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody @Valid NewUserDto newUserDto) {
         UsersEntity user = newUserDto.toEntity();
+        Map<String, Object> response = new HashMap<>();
         try {
-            usersService.saveUser(user);
-            return "User created successfully";
+            String result = usersService.saveUser(user);
+            if ("User saved successfully!".equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.put("success", false);
+                response.put("error", result);
+                response.put("message", "Error creating user");
+                response.put("status", HttpStatus.BAD_REQUEST.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error creating user";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error creating user");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
     }
 
     @PostMapping("/update")
-    public String updateUser(@RequestBody @Valid UsersDto updateUserDto) {
+    public ResponseEntity<Map<String, Object>> updateUser(@RequestBody @Valid UsersDto updateUserDto) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            usersService.updateUser(updateUserDto);
-            return "User updated successfully";
+            String result = usersService.updateUser(updateUserDto);
+            if ("User updated successfully!".equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if ("no user found".equals(result)) {
+                response.put("success", false);
+                response.put("error", result);
+                response.put("message", "User not found");
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("success", false);
+                response.put("error", result);
+                response.put("message", "Error updating user");
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error updating user";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error updating user");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<Map<String, Object>> deleteUser(@RequestParam String uid) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String result = usersService.deleteUser(uid);
+            if ("User deleted successfully!".equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if ("no user found".equals(result)) {
+                response.put("success", false);
+                response.put("error", result);
+                response.put("message", "User not found");
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("success", false);
+                response.put("error", result);
+                response.put("message", "Error deleting user");
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error deleting user");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // @GetMapping("/loginSuccess")

@@ -1,7 +1,9 @@
 package com.example.Foodle.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import com.example.Foodle.entity.FriendEntity;
 import com.example.Foodle.service.FriendService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -43,24 +46,46 @@ public class FriendController {
     }
 
     @PostMapping("/Create")
-    public String createFriend(@RequestParam String uid, @RequestParam String fid)  throws ExecutionException, InterruptedException {
+    public ResponseEntity<Map<String, Object>> createFriend(@RequestParam String uid, @RequestParam String fid) throws ExecutionException, InterruptedException {
+        Map<String, Object> response = new HashMap<>();
         try {
             friendService.createFriend(uid, fid);
-            return "Friend created successfully";
+            response.put("success", true);
+            response.put("error", null);
+            response.put("message", "Friend created successfully");
+            response.put("status", HttpStatus.OK.value());
+            response.put("data", new HashMap<>());  // empty data object
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error creating friend";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error creating friend");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());  // empty data object
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @PostMapping("/Update")
-    public String updateFriend(@RequestParam String uid, @RequestParam String fid)  throws ExecutionException, InterruptedException {
+    public ResponseEntity<Map<String, Object>> updateFriend(@RequestParam String uid, @RequestParam String fid) throws ExecutionException, InterruptedException {
+        Map<String, Object> response = new HashMap<>();
         try {
             friendService.updateFriend(uid, fid);
-            return "Friend updated successfully";
+            response.put("success", true);
+            response.put("error", null);
+            response.put("message", "Friend updated successfully");
+            response.put("status", HttpStatus.OK.value());
+            response.put("data", new HashMap<>());  // empty data object
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error updating friend";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error updating friend");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());  // empty data object
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 

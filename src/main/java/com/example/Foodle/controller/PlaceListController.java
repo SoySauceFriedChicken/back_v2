@@ -3,6 +3,7 @@ package com.example.Foodle.controller;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,47 +51,81 @@ public class PlaceListController {
     }
 
     @PostMapping("/create")
-    public String createPlaceList(@RequestBody @Valid PlaceListDto placeListDto) {
+    public ResponseEntity<Map<String, Object>> createPlaceList(@RequestBody @Valid PlaceListDto placeListDto) {
         PlaceListEntity placeList = placeListDto.toEntity();
+        Map<String, Object> response = new HashMap<>();
         try {
-            return placeListService.createPlaceList(placeList);
+            String result = placeListService.createPlaceList(placeList);
+            response.put("success", true);
+            response.put("error", null);
+            response.put("message", result);
+            response.put("status", HttpStatus.OK.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error creating PlaceList";
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error creating PlaceList");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/update")
-    public ResponseEntity<String> updatePlaceList(@RequestBody Map<String, Object> request) {
+    public ResponseEntity<Map<String, Object>> updatePlaceList(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
         try {
             int lid = (int) request.get("lid");
             ObjectMapper objectMapper = new ObjectMapper();
             List<Map<String, Object>> placesMapList = (List<Map<String, Object>>) request.get("places");
-    
+
             // Map을 PlaceDto 객체로 변환
             List<PlaceDto> placeList = new ArrayList<>();
             for (Map<String, Object> placeMap : placesMapList) {
                 PlaceDto placeDto = objectMapper.convertValue(placeMap, PlaceDto.class);
                 placeList.add(placeDto);
             }
-    
+
             // 서비스 메서드 호출
-            placeListService.updatePlaceList(lid, placeList);
-            return ResponseEntity.ok("Place list updated successfully");
+            String result = placeListService.updatePlaceList(lid, placeList);
+            response.put("success", true);
+            response.put("error", null);
+            response.put("message", "Place list updated successfully");
+            response.put("status", HttpStatus.OK.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating place list");
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error updating place list");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<String> deletePlaceList(@RequestBody PlaceListDto placeListDto) {
+    public ResponseEntity<Map<String, Object>> deletePlaceList(@RequestBody PlaceListDto placeListDto) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            placeListService.deletePlaceList(placeListDto.toEntity());
-            return ResponseEntity.ok("Place list deleted successfully");
+            String result = placeListService.deletePlaceList(placeListDto.toEntity());
+            response.put("success", true);
+            response.put("error", null);
+            response.put("message", result);
+            response.put("status", HttpStatus.OK.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting place list");
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error deleting place list");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     

@@ -42,11 +42,11 @@ public class PlaceListService {
         return placeListDao.createPlaceList(placeList);
     }
 
-    public void updatePlaceList(int lid, List<PlaceDto> placeList) throws InterruptedException, ExecutionException {
-        placeListDao.updatePlaceList(lid, placeList);
+    public String updatePlaceList(int lid, List<PlaceDto> placeList) throws InterruptedException, ExecutionException {
+        return placeListDao.updatePlaceList(lid, placeList);
     }
 
-    public void deletePlaceList(PlaceListEntity placeListEntity) throws InterruptedException, ExecutionException {
-        placeListDao.deletePlaceList(placeListEntity);
+    public String deletePlaceList(PlaceListEntity placeListEntity) throws InterruptedException, ExecutionException {
+        return placeListDao.deletePlaceList(placeListEntity);
     }
 }
