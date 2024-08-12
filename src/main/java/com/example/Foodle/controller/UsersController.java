@@ -45,33 +45,35 @@ public class UsersController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<Map<String, Object>> getUserProfile(@RequestParam String uid) {
+    public UsersDto getUserProfile(@RequestParam String uid) {
         Map<String, Object> response = new HashMap<>();
         try {
-            UsersDto user = usersService.findByUid(uid);
-            if (user != null) {
-                response.put("success", true);
-                response.put("error", null);
-                response.put("message", "User profile retrieved successfully");
-                response.put("status", HttpStatus.OK.value());
-                response.put("data", user);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else {
-                response.put("success", false);
-                response.put("error", "User not found");
-                response.put("message", "No user found with the provided UID");
-                response.put("status", HttpStatus.NOT_FOUND.value());
-                response.put("data", new HashMap<>());
-                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-            }
+            return usersService.findByUid(uid);
+            
+            // if (user != null) {
+            //     response.put("success", true);
+            //     response.put("error", null);
+            //     response.put("message", "User profile retrieved successfully");
+            //     response.put("status", HttpStatus.OK.value());
+            //     response.put("data", user);
+            //     return new ResponseEntity<>(response, HttpStatus.OK);
+            // } else {
+            //     response.put("success", false);
+            //     response.put("error", "User not found");
+            //     response.put("message", "No user found with the provided UID");
+            //     response.put("status", HttpStatus.NOT_FOUND.value());
+            //     response.put("data", new HashMap<>());
+            //     return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            // }
         } catch (Exception e) {
-            e.printStackTrace();
-            response.put("success", false);
-            response.put("error", e.getMessage());
-            response.put("message", "Error retrieving user profile");
-            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.put("data", new HashMap<>());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            // e.printStackTrace();
+            // response.put("success", false);
+            // response.put("error", e.getMessage());
+            // response.put("message", "Error retrieving user profile");
+            // response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            // response.put("data", new HashMap<>());
+            // return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return null;
         }
     }
 
