@@ -17,7 +17,7 @@ public class UpdateUserDto {
     private String nickName;
     private String profileImage;
 
-    public UsersEntity toEntity() {
-        return new UsersEntity(uid, name, nickName, profileImage);
-    }
+    // public UsersEntity toEntity() {
+    //     return new UsersEntity(uid, name, nickName, profileImage);
+    // }
 }

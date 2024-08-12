@@ -45,11 +45,16 @@ public class UsersController {
     }
 
     @GetMapping("/profile")
+<<<<<<< HEAD
     public ResponseEntity<Map<String, Object>> getUserProfile(@RequestParam String uid) {
+=======
+    public UsersDto getUserProfile(@RequestParam String uid) {
+>>>>>>> b4fbbc6 ([feat] String 리턴값 Json 형태로 수정 + 장소 검색시 Joiner의 장소 리스트)
         Map<String, Object> response = new HashMap<>();
         try {
             UsersDto user = usersService.findByUid(uid);
             if (user != null) {
+<<<<<<< HEAD
                 response.put("success", true);
                 response.put("error", null);
                 response.put("message", "User profile retrieved successfully");
@@ -72,11 +77,24 @@ public class UsersController {
             response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.put("data", new HashMap<>());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+=======
+                return user;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+>>>>>>> b4fbbc6 ([feat] String 리턴값 Json 형태로 수정 + 장소 검색시 Joiner의 장소 리스트)
         }
     }
 
     @PostMapping("/create")
+<<<<<<< HEAD
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody @Valid NewUserDto newUserDto) {
+=======
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody @Valid UsersDto newUserDto) {
+>>>>>>> b4fbbc6 ([feat] String 리턴값 Json 형태로 수정 + 장소 검색시 Joiner의 장소 리스트)
         UsersEntity user = newUserDto.toEntity();
         Map<String, Object> response = new HashMap<>();
         try {

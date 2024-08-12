@@ -9,11 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.threeten.bp.Instant;
 
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,11 +24,14 @@ import java.time.format.DateTimeFormatter;
 import com.example.Foodle.dto.request.meeting.MeetingDto;
 import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
 import com.example.Foodle.dto.request.place.PlaceDto;
+import com.example.Foodle.dto.request.placeList.PlaceListDto;
+import com.example.Foodle.dto.request.user.PreferredTimeDto;
 import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.MeetingPlaceEntity;
 import com.example.Foodle.entity.MeetingPlaceInfoEntity;
 import com.example.Foodle.entity.PlaceEntity;
+import com.example.Foodle.entity.PreferredTimeEntity;
 import com.example.Foodle.entity.UsersEntity;
 import com.example.Foodle.service.AdminService;
 import com.example.Foodle.service.FirestoreService;
@@ -57,9 +63,17 @@ public class MeetingDao {
 
     // private Firestore firestore = FirestoreClient.getFirestore();
 
+    private static final double SIMILARITY_THRESHOLD = 0.7; // 유사성 비율 임계값 (예: 70%)
+    
     public static final String COLLECTION_NAME = "Meet";
     public static final String USERS_COLLECTION_NAME = "Users";
     public static final String PLACE_COLLECTION_NAME = "Place";
+    private static final String MEETINGS_COLLECTION_NAME = "Meet";
+
+    public static LocalTime convertTimeStringToLocalTime(String time) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        return LocalTime.parse(time, timeFormatter);
+    }
 
     public List<PlaceDto> convertToMeetingDtos(List<Map<String, Object>> data) {
         ObjectMapper mapper = new ObjectMapper();
@@ -109,8 +123,34 @@ public class MeetingDao {
         Firestore db = FirestoreClient.getFirestore();
         ApiFuture<QuerySnapshot> meetingsFuture = db.collection(COLLECTION_NAME).get();
         List<QueryDocumentSnapshot> meetingDocuments = meetingsFuture.get().getDocuments();
-        log.info("Retrieving all meetings");
+
         return convertToMeetingDtos(db, meetingDocuments);
+        // log.info("Retrieving all meetings");
+        // List<MeetingDto> meetingDtos = convertToMeetingDtos(db, meetingDocuments);
+        // List<MeetingDto> newMeetingDtos = new ArrayList<>();
+        // MeetingDto newMeetingDto = new MeetingDto();
+       
+        // for(MeetingDto meetingDto : meetingDtos) {
+        //     newMeetingDto = new MeetingDto(meetingDto.getMid(), meetingDto.getName(), meetingDto.getDate(), meetingDto.getPlaces(), null);
+        //     List<UsersDto> list = new ArrayList<>();
+        //     for(UsersDto user : meetingDto.getJoiners()) {
+        //         UsersDto userDto = new UsersDto(user.getUid(), user.getName(), user.getNickName(), user.getProfileImage(), null, user.getLikeWord(), user.getDislikeWord());
+        //         List<PreferredTimeDto> preferredTimeList = new ArrayList<>();
+        //         PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
+        //         for(PreferredTimeDto time : user.getPreferredTime()) {
+        //             preferredTimeDto.setDay(time.getDay());
+        //             preferredTimeDto.setStart(convertTimeStringToLocalTime(time.getStart()));
+        //             preferredTimeDto.setEnd(convertTimeStringToLocalTime(time.getEnd()));
+        //             preferredTimeList.add(preferredTimeDto);
+        //         }
+        //         userDto.setPreferredTime(preferredTimeList);
+        //         list.add(userDto);
+        //     }
+        //     meetingDto.getJoiners().clear();
+        //     meetingDto.setJoiners(list);
+        // }
+        // newMeetingDtos.add(newMeetingDto);
+        // return meetingDtos;
     }
 
     public List<MeetingDto> getMeetingsByUid(String uid) throws ExecutionException, InterruptedException {
@@ -146,8 +186,24 @@ public class MeetingDao {
                 QuerySnapshot userSnapshot = userSnapshotFuture.get();
 
                 if (!userSnapshot.isEmpty()) {
-                    UsersDto usersDto = userSnapshot.getDocuments().get(0).toObject(UsersDto.class);
-                    joiners.add(usersDto);
+                    UsersEntity usersEntity = userSnapshot.getDocuments().get(0).toObject(UsersEntity.class);                    
+                    UsersDto userDto = new UsersDto(usersEntity.getUid(), usersEntity.getName(), usersEntity.getNickName(), usersEntity.getProfileImage(), null, usersEntity.getLikeWord(), usersEntity.getDislikeWord());
+                    List<PreferredTimeDto> preferredTimeList = new ArrayList<>();
+                    PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
+                    if(usersEntity.getPreferredTime() != null) {
+                        for(PreferredTimeEntity time : usersEntity.getPreferredTime()) {
+                            preferredTimeDto.setDay(time.getDay());
+                            preferredTimeDto.setStart(convertTimeStringToLocalTime(time.getStart()));
+                            preferredTimeDto.setEnd(convertTimeStringToLocalTime(time.getEnd()));                            preferredTimeList.add(preferredTimeDto);
+                        }
+                        userDto.setPreferredTime(preferredTimeList);
+                        joiners.add(userDto);   
+                    }
+                    else {
+                        // userDto.setPreferredTime(null);
+                        joiners.add(userDto);
+                    }
+
                 } else {
                     log.info("User with uid " + memberId + " not found");
                 }
@@ -499,19 +555,19 @@ public class MeetingDao {
 
             FirestoreService firestoreService = new FirestoreService();
 
-            // 예시로 targetToken, title, body, id, isEnd를 설정
-            String targetToken = firestoreService.getFcmToken(joiners.get(1).getUid()); // 실제 토큰으로 교체해야 함
-            String title = "Meeting Updated";
-            String body = "Meeting with ID " + mid + " has been updated - new joiners added";
-            String id = String.valueOf(mid);
-            String isEnd = "false";
+            // // 예시로 targetToken, title, body, id, isEnd를 설정
+            // String targetToken = firestoreService.getFcmToken(joiners.get(1).getUid()); // 실제 토큰으로 교체해야 함
+            // String title = "Meeting Updated";
+            // String body = "Meeting with ID " + mid + " has been updated - new joiners added";
+            // String id = String.valueOf(mid);
+            // String isEnd = "false";
 
-            try {
-                adminService.sendPushMessage(targetToken, title, body, id, isEnd);
-            } catch (IOException | JsonProcessingException e) {
-                log.error("Failed to send push message", e);
-            }
-            return "Meeting created successfully!";
+            // try {
+            //     adminService.sendPushMessage(targetToken, title, body, id, isEnd);
+            // } catch (IOException | JsonProcessingException e) {
+            //     log.error("Failed to send push message", e);
+            // }
+            return "Joiner Updated successfully!";
         } else {
             throw new RuntimeException("Document with mid " + mid + " not found");
         }
@@ -556,18 +612,18 @@ public class MeetingDao {
 
             FirestoreService firestoreService = new FirestoreService();
 
-            // 예시로 targetToken, title, body, id, isEnd를 설정
-            String targetToken = firestoreService.getFcmToken(meetEntity.getMember().get(1)); // 실제 토큰으로 교체해야 함
-            String title = "Meeting Updated";
-            String body = "Meeting with ID " + mid + " has been updated - time changed";
-            String id = String.valueOf(mid);
-            String isEnd = "false";
+            // // 예시로 targetToken, title, body, id, isEnd를 설정
+            // String targetToken = firestoreService.getFcmToken(meetEntity.getMember().get(1)); // 실제 토큰으로 교체해야 함
+            // String title = "Meeting Updated";
+            // String body = "Meeting with ID " + mid + " has been updated - time changed";
+            // String id = String.valueOf(mid);
+            // String isEnd = "false";
 
-            try {
-                adminService.sendPushMessage(targetToken, title, body, id, isEnd);
-            } catch (IOException | JsonProcessingException e) {
-                log.error("Failed to send push message", e);
-            }
+            // try {
+            //     adminService.sendPushMessage(targetToken, title, body, id, isEnd);
+            // } catch (IOException | JsonProcessingException e) {
+            //     log.error("Failed to send push message", e);
+            // }
             
             return "Meeting Time Updated successfully!";
         } else {
@@ -590,4 +646,166 @@ public class MeetingDao {
             throw new RuntimeException("Document with mid " + meetEntity.getMid() + " not found");
         }
     }
+
+    // public List<PlaceDto> getPreferredPlaceByPlaceName(int mid, String placeName) throws InterruptedException, ExecutionException {
+    //     Firestore db = FirestoreClient.getFirestore();
+    //     CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
+    //     Query query = meetingsRef.whereEqualTo("mid", mid);
+    //     ApiFuture<QuerySnapshot> querySnapshot = query.get();
+    //     List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+    //     if (!documents.isEmpty()) {
+    //         DocumentSnapshot document = documents.get(0);
+    //         MeetEntity meetEntity = document.toObject(MeetEntity.class);
+    //         List<MeetingPlaceEntity> lists = meetEntity.getLists();
+    //         Map<String, Integer> placeCount = new HashMap<>();
+
+    //         return null;
+    //     } else {
+    //         throw new RuntimeException("Document with mid " + mid + " not found");
+    //     }
+    // }
+
+    // public List<PlaceDto> getPreferredPlaceByCategory(int mid, String category) throws InterruptedException, ExecutionException {
+    //     Firestore db = FirestoreClient.getFirestore();
+    //     CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
+    //     Query query = meetingsRef.whereEqualTo("mid", mid);
+    //     ApiFuture<QuerySnapshot> querySnapshot = query.get();
+    //     List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+    //     if (!documents.isEmpty()) {
+    //         DocumentSnapshot document = documents.get(0);
+    //         MeetEntity meetEntity = document.toObject(MeetEntity.class);
+    //         List<MeetingPlaceEntity> lists = meetEntity.getLists();
+    //         Map<String, Integer> placeCount = new HashMap<>();
+
+    //         return null;
+    //     } else {
+    //         throw new RuntimeException("Document with mid " + mid + " not found");
+    //     }
+    // }
+
+    public List<PlaceDto> getPlaceByPlaceNameAndMid(int mid, String placeName) throws ExecutionException, InterruptedException {
+        if (placeName.isEmpty() || placeName.isBlank()) {
+            return new ArrayList<>();
+        }
+
+        Firestore db = FirestoreClient.getFirestore();
+        // Fetch all places
+        ApiFuture<QuerySnapshot> future = db.collection(PLACE_COLLECTION_NAME).get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        List<PlaceDto> places = new ArrayList<>();
+        for (QueryDocumentSnapshot document : documents) {
+            PlaceDto place = document.toObject(PlaceDto.class);
+            if (isSimilar(place.getPlaceName(), placeName) || containsWord(place.getPlaceName(), placeName)) {
+                places.add(place);
+            }
+        }
+
+        // Fetch members' UIDs
+        MeetingDto meetingDto = getMeetingsByMid(mid);
+
+        List<UsersDto> membersUid = meetingDto.getJoiners();
+        List <String> members = new ArrayList<>();
+        for(UsersDto user : membersUid) {
+            members.add(user.getUid());
+        }
+
+        // Fetch places saved by members
+        List<PlaceDto> memberPlaces = new ArrayList<>();
+        PlaceListDao placeListDao = new PlaceListDao();
+        for (String uid : members) {
+            List<PlaceListDto> UsersPlaceList = placeListDao.getUserPlaceLists(uid);
+            for (PlaceListDto placeList : UsersPlaceList) {
+                List<PlaceDto> placeDtos = placeList.getPlaces();
+                for (PlaceDto place : placeDtos) {
+                    memberPlaces.add(place);
+                }
+            }
+        }
+
+        return sortPlacesBySimilarity(places, memberPlaces);
+    }
+
+    public List<PlaceDto> getPlaceByCategoryAndMid(int mid, String category) throws ExecutionException, InterruptedException {
+        if (category.isBlank() || category.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Firestore db = FirestoreClient.getFirestore();
+        // Fetch all places
+        ApiFuture<QuerySnapshot> future = db.collection(PLACE_COLLECTION_NAME).get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        List<PlaceDto> places = new ArrayList<>();
+        for (QueryDocumentSnapshot document : documents) {
+            PlaceDto place = document.toObject(PlaceDto.class);
+            if (isSimilar(place.getCategory(), category) || containsWord(place.getCategory(), category)) {
+                places.add(place);
+            }
+        }
+
+        // Fetch members' UIDs
+        MeetingDto meetingDto = getMeetingsByMid(mid);
+
+        List<UsersDto> membersUid = meetingDto.getJoiners();
+        List <String> members = new ArrayList<>();
+        for(UsersDto user : membersUid) {
+            members.add(user.getUid());
+        }
+
+        // Fetch places saved by members
+        List<PlaceDto> memberPlaces = new ArrayList<>();
+        PlaceListDao placeListDao = new PlaceListDao();
+        for (String uid : members) {
+            List<PlaceListDto> UsersPlaceList = placeListDao.getUserPlaceLists(uid);
+            for (PlaceListDto placeList : UsersPlaceList) {
+                List<PlaceDto> placeDtos = placeList.getPlaces();
+                for (PlaceDto place : placeDtos) {
+                    memberPlaces.add(place);
+                }
+            }
+        }
+
+        return sortPlacesBySimilarity(places, memberPlaces);
+    }
+
+    private boolean isSimilar(String source, String target) {
+        int distance = getLevenshteinDistance(source, target);
+        double similarity = 1.0 - ((double) distance / Math.max(source.length(), target.length()));
+        return similarity >= SIMILARITY_THRESHOLD;
+    }
+
+    private int getLevenshteinDistance(String source, String target) {
+        LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
+        return levenshteinDistance.apply(source, target);
+    }
+
+    private boolean containsWord(String source, String target) {
+        return source.toLowerCase().contains(target.toLowerCase());
+    }
+
+    private double getSimilarity(String source, String target) {
+        int distance = getLevenshteinDistance(source, target);
+        return 1.0 - ((double) distance / Math.max(source.length(), target.length()));
+    }
+
+    private List<PlaceDto> sortPlacesBySimilarity(List<PlaceDto> places, List<PlaceDto> targetPlaces) {
+        return places.stream()
+                .sorted((place1, place2) -> {
+                    double maxSimilarity1 = getMaxSimilarity(place1.getPlaceName(), targetPlaces);
+                    double maxSimilarity2 = getMaxSimilarity(place2.getPlaceName(), targetPlaces);
+                    return Double.compare(maxSimilarity2, maxSimilarity1); // 유사성이 높은 순으로 정렬
+                })
+                .collect(Collectors.toList());
+    }
+    
+    private double getMaxSimilarity(String source, List<PlaceDto> targetPlaces) {
+        return targetPlaces.stream()
+                .mapToDouble(target -> getSimilarity(source, target.getPlaceName()))
+                .max()
+                .orElse(0.0);
+    }
+    
+
+    
 }

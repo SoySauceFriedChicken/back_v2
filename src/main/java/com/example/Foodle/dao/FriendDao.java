@@ -1,5 +1,7 @@
 package com.example.Foodle.dao;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -7,9 +9,11 @@ import java.util.concurrent.ExecutionException;
 import org.springframework.stereotype.Repository;
 
 import com.example.Foodle.dto.request.friend.FriendDto;
+import com.example.Foodle.dto.request.user.PreferredTimeDto;
 import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.FriendEntity;
 import com.example.Foodle.entity.MeetEntity;
+import com.example.Foodle.entity.PreferredTimeEntity;
 import com.example.Foodle.entity.UsersEntity;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
@@ -30,6 +34,11 @@ public class FriendDao {
 
     private Firestore getFirestore() {
         return FirestoreClient.getFirestore();
+    }
+
+    public static LocalTime convertTimeStringToLocalTime(String time) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        return LocalTime.parse(time, timeFormatter);
     }
 
     public List<FriendDto> getFriendsByUid(String uid) throws ExecutionException, InterruptedException {
@@ -53,8 +62,22 @@ public class FriendDao {
                 // Check if user document exists
                 if (!userDocument.isEmpty()) {
                     // log.info("User found: " + userDocument.getDocuments().get(0).toObject(UsersEntity.class));
-                    UsersDto usersDto = userDocument.getDocuments().get(0).toObject(UsersDto.class);
-                    friendDto.setUser(usersDto);
+                    UsersEntity usersEntity = userDocument.getDocuments().get(0).toObject(UsersEntity.class);
+
+                    UsersDto userDto = new UsersDto(usersEntity.getUid(), usersEntity.getName(), usersEntity.getNickName(), usersEntity.getProfileImage(), null, usersEntity.getLikeWord(), usersEntity.getDislikeWord());
+                    List<PreferredTimeDto> preferredTimeList = new ArrayList<>();
+                    PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
+                    if(usersEntity.getPreferredTime() != null) {
+                        for(PreferredTimeEntity preferredTime : usersEntity.getPreferredTime()) {
+                            preferredTimeDto.setDay(preferredTime.getDay());
+                            preferredTimeDto.setStart(convertTimeStringToLocalTime(preferredTime.getStart()));
+                            preferredTimeDto.setEnd(convertTimeStringToLocalTime(preferredTime.getEnd()));
+                            preferredTimeList.add(preferredTimeDto);
+                        }
+                        userDto.setPreferredTime(preferredTimeList);
+                    }               
+
+                    friendDto.setUser(userDto);
                     friendDto.setLike(friendEntity.getLike());
                 } else{
                     log.info("User not found");

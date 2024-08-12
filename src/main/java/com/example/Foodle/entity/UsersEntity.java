@@ -1,5 +1,7 @@
 package com.example.Foodle.entity;
 
+import java.util.List;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,8 +26,11 @@ public class UsersEntity {
     private String type;
     private String email;
     private String role;
+    private List<PreferredTimeEntity> preferredTime;
+    private List<String> likeWord;
+    private List<String> dislikeWord;
 
-    public UsersEntity(String uid, String name, String nickName, String profileImage) {
+    public UsersEntity(String uid, String name, String nickName, String profileImage, List<PreferredTimeEntity> preferredTime, List<String> likeWord, List<String> dislikeWord) {
         this.uid = uid;
         this.name = name;
         this.nickName = nickName;
@@ -33,5 +38,8 @@ public class UsersEntity {
         this.type = "";
         this.email = "";
         this.role = "USER";
+        this.preferredTime = preferredTime;
+        this.likeWord = likeWord;
+        this.dislikeWord = dislikeWord;
     }
 }

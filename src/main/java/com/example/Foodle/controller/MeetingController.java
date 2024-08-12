@@ -22,6 +22,7 @@ import com.example.Foodle.dto.request.meeting.NewMeetingDto;
 import com.example.Foodle.dto.request.meeting.UpdateMeeingTimeDto;
 import com.example.Foodle.dto.request.meeting.UpdateMeetingDto;
 import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
+import com.example.Foodle.dto.request.place.PlaceDto;
 import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.UsersEntity;
@@ -31,13 +32,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
 import java.util.HashMap;
 
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/meetings")
@@ -237,7 +240,11 @@ public class MeetingController {
             }
             // 서비스 메서드 호출
             String result = meetingService.addUserToMeeting(mid, newUsers);
+<<<<<<< HEAD
             if ("Meeting created successfully!".equals(result)) {
+=======
+            if ("Joiner Updated successfully!".equals(result)) {
+>>>>>>> b4fbbc6 ([feat] String 리턴값 Json 형태로 수정 + 장소 검색시 Joiner의 장소 리스트)
                 response.put("success", true);
                 response.put("error", null);
                 response.put("message", result);
@@ -278,7 +285,11 @@ public class MeetingController {
             UsersDto user = new ObjectMapper().convertValue(entity.get("joiner"), UsersDto.class);
             // 서비스 메서드 호출
             String result = meetingService.deleteUserFromMeeting(mid, user);
+<<<<<<< HEAD
             if ("Meeting updated successfully!".equals(result)) {
+=======
+            if ("Delete Joiner successfully!".equals(result)) {
+>>>>>>> b4fbbc6 ([feat] String 리턴값 Json 형태로 수정 + 장소 검색시 Joiner의 장소 리스트)
                 response.put("success", true);
                 response.put("error", null);
                 response.put("message", result);
@@ -316,7 +327,11 @@ public class MeetingController {
         Map<String, Object> response = new HashMap<>();
         try {
             String result = meetingService.updateTime(entity.getMid(), entity.getTime());
+<<<<<<< HEAD
             if ("Meeting updated successfully!".equals(result)) {
+=======
+            if ("Meeting Time Updated successfully!".equals(result)) {
+>>>>>>> b4fbbc6 ([feat] String 리턴값 Json 형태로 수정 + 장소 검색시 Joiner의 장소 리스트)
                 response.put("success", true);
                 response.put("error", null);
                 response.put("message", result);
@@ -386,4 +401,33 @@ public class MeetingController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+<<<<<<< HEAD
+=======
+
+    // 미팅에 참여중인 참가자들 목록을 가져와서 참가자들이 선호하는 장소 리턴하기
+    @GetMapping("/getPreferredPlacebyPlaceName")
+    public List<PlaceDto> getPreferredPlaceByPlaceName(@RequestParam int mid, @RequestParam String placeName) {
+        try {
+            List<PlaceDto> result = meetingService.getPreferredPlaceByPlaceName(mid, placeName);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/getPreferredPlacebyCategory")
+    public List<PlaceDto> getPreferredPlaceByCategory(@RequestParam int mid, @RequestParam String category) {
+        // log.info("mid: " + mid + ", category: " + category);
+        try {
+            // log.info("mid: " + mid + ", category: " + category);
+            List<PlaceDto> result = meetingService.getPreferredPlaceByCategory(mid, category);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            // log.info("mid: " + mid + ", category: " + category);
+            return null;
+        }
+    }
+>>>>>>> b4fbbc6 ([feat] String 리턴값 Json 형태로 수정 + 장소 검색시 Joiner의 장소 리스트)
 }

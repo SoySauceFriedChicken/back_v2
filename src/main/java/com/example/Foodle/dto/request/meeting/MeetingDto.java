@@ -33,9 +33,9 @@ public class MeetingDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "UTC")
     private Date date;
 
-    private final List<UsersDto> joiners;
+    private List<UsersDto> joiners;
 
-    private final List<MeetingPlaceDto> places;
+    private List<MeetingPlaceDto> places;
     
     // 기본 생성자
     public MeetingDto() {

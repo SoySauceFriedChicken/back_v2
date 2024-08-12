@@ -41,4 +41,43 @@ public class PlaceService {
     public List<PlaceDto> getPlacesByCategory(String category) throws ExecutionException, InterruptedException {
         return placeDao.getPlacesByCategory(category);
     }
+
+    public String fixRegularBreakMisplacement() throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        ApiFuture<QuerySnapshot> query = db.collection("Place").get();
+        List<QueryDocumentSnapshot> documents = query.get().getDocuments();
+    
+        for (QueryDocumentSnapshot document : documents) {
+            PlaceDto place = document.toObject(PlaceDto.class);
+            List<String> breaktime = place.getBreakTime();
+            List<String> working = place.getWorking();
+    
+            boolean modified = false;
+            List<String> updatedBreaktime = new ArrayList<>();
+            List<String> updatedWorking = new ArrayList<>();
+    
+            for (int i = 0; i < breaktime.size(); i++) {
+                String breaktimeSplit = breaktime.get(i);
+                String workingSplit = working.get(i);
+    
+                if (breaktimeSplit.equals("정기휴무")) {
+                    updatedBreaktime.add("");
+                    updatedWorking.add("정기휴무");
+                    modified = true;
+                } else {
+                    updatedBreaktime.add(breaktimeSplit);
+                    updatedWorking.add(workingSplit);
+                }
+            }
+    
+            if (modified) {
+                place.setBreakTime(updatedBreaktime);
+                place.setWorking(updatedWorking);
+                db.collection("Place").document(document.getId()).set(place);
+            }
+        }
+    
+        return "Regular break misplacement correction completed.";
+    }
+    
 }

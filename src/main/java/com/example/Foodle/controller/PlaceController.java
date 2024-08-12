@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -55,6 +56,17 @@ public class PlaceController {
     public List<PlaceDto> getPlacesByCategory(@RequestParam String category) throws ExecutionException, InterruptedException {
         //log.info("placeName: " + category);
         return placeService.getPlacesByCategory(category);
+    }
+
+    @GetMapping("/fixBreaktime")
+    public ResponseEntity<String> fixRegularBreakMisplacement() {
+        try {
+            String result = placeService.fixRegularBreakMisplacement();
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Error fixing regular break misplacement", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

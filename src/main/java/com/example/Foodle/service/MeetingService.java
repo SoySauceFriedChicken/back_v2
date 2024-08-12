@@ -4,6 +4,7 @@ import com.example.Foodle.dao.MeetingDao;
 import com.example.Foodle.dto.request.friend.FriendDto;
 import com.example.Foodle.dto.request.meeting.MeetingDto;
 import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
+import com.example.Foodle.dto.request.place.PlaceDto;
 import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.MeetEntity;
 import com.example.Foodle.entity.UsersEntity;
@@ -75,6 +76,14 @@ public class MeetingService {
 
     public String deleteMeeting(MeetEntity meetEntity) throws InterruptedException, ExecutionException {
         return meetingDao.deleteMeeting(meetEntity);
+    }
+
+    public List<PlaceDto> getPreferredPlaceByPlaceName(int mid, String placeName) throws InterruptedException, ExecutionException, IOException {
+        return meetingDao.getPlaceByPlaceNameAndMid(mid, placeName);
+    }
+
+    public List<PlaceDto> getPreferredPlaceByCategory(int mid, String category) throws InterruptedException, ExecutionException, IOException {
+        return meetingDao.getPlaceByCategoryAndMid(mid, category);
     }
 
 }
