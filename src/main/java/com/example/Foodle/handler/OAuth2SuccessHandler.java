@@ -33,6 +33,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
             // 리디렉션 URL에 유저 ID를 포함하여 전송
             String redirectUrl = String.format("http://3.39.156.254:8080/auth/oauth-response/%s/3600?userId=%s", token, userId);
             response.sendRedirect(redirectUrl);
+
+            // http://3.39.156.254:8080/auth/oauth-response/eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYWthb18zNTkzMjI5NjA4IiwiaWF0IjoxNzIzNjk0ODQyLCJleHAiOjE3MjM2OTg0NDJ9.-Z4dB7qb_QuMNvnorjW69WFgV0DYcE3H3vYagfYDKho/3600?userId=kakao_3593229608
             // http://localhost:8080/auth/oauth-response/eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYWthb18zNTkzMjI5NjA4IiwiaWF0IjoxNzIxMjIwMDM2LCJleHAiOjE3MjEyMjM2MzZ9.FOWtl8u8oXLxaDcZ2SAb22LRThjQ6JqhJ0OmI-THA00/3600
             // http://localhost:8080/auth/oauth-response/eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYXZlcl9fN1Y5eHBGZ0pzcXIxMCIsImlhdCI6MTcyMTIyMjI1MSwiZXhwIjoxNzIxMjI1ODUxfQ.Ita9eevVrisKpgcxOiCeXjPRn4G83eY1EhAfuaOsXi0/3600
 	}

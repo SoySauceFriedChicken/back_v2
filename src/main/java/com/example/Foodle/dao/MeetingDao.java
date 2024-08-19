@@ -264,7 +264,18 @@ public class MeetingDao {
             meetingDtos.add(meetingDto);
             // log.info("Meeting found: " + meetingDto);
         }
-        meetingDtos.sort((m1, m2) -> m1.getMid() - m2.getMid());
+        // 미팅 날짜를 기준으로 오름차순 정렬
+        meetingDtos.sort((m1, m2) -> {
+            if (m1.getDate() == null && m2.getDate() == null) {
+                return 0;
+            } else if (m1.getDate() == null) {
+                return 1;
+            } else if (m2.getDate() == null) {
+                return -1;
+            } else {
+                return m1.getDate().compareTo(m2.getDate());
+            }
+        });
         return meetingDtos;
     }
 
@@ -711,8 +722,38 @@ public class MeetingDao {
             members.add(user.getUid());
         }
 
-        // Fetch places saved by members
+        List<String> UsersLikeWords = new ArrayList<>();
+        List<String> UsersDislikeWords = new ArrayList<>();
         List<PlaceDto> memberPlaces = new ArrayList<>();
+
+        for(String uid : members) {
+            UsersDto user = new UsersDao().findByUid(uid);
+            if(user.getLikeWord() != null) {
+                UsersLikeWords.addAll(user.getLikeWord());
+            }
+            if(user.getDislikeWord() != null) {
+                UsersDislikeWords.addAll(user.getDislikeWord());
+            }
+        }
+
+        // 'places'의 복사본 생성
+        List<PlaceDto> placesCopy = new ArrayList<>(places);
+
+        for(PlaceDto place : placesCopy) {
+            for(String likeWord : UsersLikeWords) {
+                if(containsWord(place.getCategory(), likeWord) || place.getCategory().equals(likeWord)) {
+                    memberPlaces.add(place);
+                }
+            }
+            for(String dislikeWord : UsersDislikeWords) {
+                if(containsWord(place.getCategory(), dislikeWord) || place.getCategory().equals(dislikeWord)) {
+                    places.remove(place);  // 원본 리스트에서 제거
+                }
+            }
+        }
+
+
+        // Fetch places saved by members
         PlaceListDao placeListDao = new PlaceListDao();
         for (String uid : members) {
             List<PlaceListDto> UsersPlaceList = placeListDao.getUserPlaceLists(uid);
@@ -753,8 +794,30 @@ public class MeetingDao {
             members.add(user.getUid());
         }
 
-        // Fetch places saved by members
+        List<String> UsersLikeWords = new ArrayList<>();
+        List<String> UsersDislikeWords = new ArrayList<>();
         List<PlaceDto> memberPlaces = new ArrayList<>();
+
+        for(String uid : members) {
+            UsersDto user = new UsersDao().findByUid(uid);
+            UsersLikeWords.addAll(user.getLikeWord());
+            UsersDislikeWords.addAll(user.getDislikeWord());
+        }
+
+        for(PlaceDto place : places) {
+            for(String likeWord : UsersLikeWords) {
+                if(containsWord(place.getCategory(), likeWord)) {
+                    memberPlaces.add(place);
+                }
+            }
+            for(String dislikeWord : UsersDislikeWords) {
+                if(containsWord(place.getCategory(), dislikeWord)) {
+                    places.remove(place);
+                }
+            }
+        }
+
+        // Fetch places saved by members
         PlaceListDao placeListDao = new PlaceListDao();
         for (String uid : members) {
             List<PlaceListDto> UsersPlaceList = placeListDao.getUserPlaceLists(uid);
