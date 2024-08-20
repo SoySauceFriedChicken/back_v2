@@ -60,7 +60,7 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
                 }
                 usersEntity = new UsersEntity(userId, name, "새로운 사용자", profileImage, "naver", email, "", null, null, null);
             }
-
+            
             usersDao.saveUser(usersEntity);
             
             return new customOAuth2User(userId);

@@ -109,14 +109,15 @@ public class UsersDao {
         }
     }
     
-    public String saveUser(UsersEntity user) {
+    public String saveUser(UsersEntity user) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         if(db.collection(COLLECTION_NAME).whereEqualTo("uid", user.getUid()) != null) {
-
-
-            db.collection(COLLECTION_NAME).document().set(user); // 자동 생성된 ID를 사용
-            // log.info("User saved successfully!");
-            return "User saved successfully!";
+            // 같은 uid를 가진 사용자가 없을 때만 저장
+            if(db.collection(COLLECTION_NAME).whereEqualTo("uid", user.getUid()).get().get().isEmpty()){
+                db.collection(COLLECTION_NAME).document().set(user); // 자동 생성된 ID를 사용
+                // log.info("User saved successfully!");
+                return "User saved successfully!";
+            }    
         }
         // log.info("User already exists!");
         return "User already exists!";

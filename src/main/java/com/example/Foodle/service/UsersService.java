@@ -39,7 +39,7 @@ public class UsersService {
         return usersDao.findByUid(uid);
     }
 
-    public String saveUser(UsersEntity user) {
+    public String saveUser(UsersEntity user) throws InterruptedException, ExecutionException {
         return usersDao.saveUser(user);
     }
 
