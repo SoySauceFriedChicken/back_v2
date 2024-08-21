@@ -90,6 +90,10 @@ public class FriendService {
         }
     }
 
+    public String createFriendByCode(String uid, String code) throws InterruptedException, ExecutionException {
+        return friendDao.createFriendByCode(uid, code);
+    }
+
     public void updateFriend(String uid, String fid) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
         DocumentReference friendRef = db.collection(COLLECTION_NAME)

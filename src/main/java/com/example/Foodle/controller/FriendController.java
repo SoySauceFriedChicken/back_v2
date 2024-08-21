@@ -67,6 +67,46 @@ public class FriendController {
         }
     }
 
+    @PostMapping("/CreateByCode")
+    public ResponseEntity<Map<String, Object>> createFriendByCodEntity(@RequestParam String uid, @RequestParam String code) throws ExecutionException, InterruptedException {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String result = friendService.createFriendByCode(uid, code);
+
+            if ("Already friend".equals(result)) {
+                response.put("success", false);
+                response.put("error", "Already friends");
+                response.put("message", "The users are already friends");
+                response.put("status", HttpStatus.CONFLICT.value());
+                response.put("data", new HashMap<>());  // empty data object
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            } else if ("Friend added Successfully".equals(result)) {
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", "Friend added successfully");
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());  // empty data object
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("error", "Unknown error");
+                response.put("message", "Unexpected result: " + result);
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());  // empty data object
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error creating friend");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());  // empty data object
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     @PostMapping("/Update")
     public ResponseEntity<Map<String, Object>> updateFriend(@RequestParam String uid, @RequestParam String fid) throws ExecutionException, InterruptedException {
         Map<String, Object> response = new HashMap<>();

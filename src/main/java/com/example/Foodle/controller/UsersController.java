@@ -185,6 +185,12 @@ public class UsersController {
         }
     }
 
+    // 자신의 친구 추가 코드 가져오기
+    @PostMapping("/getFriendCode")
+    public String getFriendCode(@RequestParam String uid) throws InterruptedException, ExecutionException {
+        return usersService.getFriendCode(uid);
+    }
+
     // @GetMapping("/loginSuccess")
     // public String loginSuccess(@AuthenticationPrincipal OAuth2User oauth2User) {
     //     String email = oauth2User.getAttribute("email");

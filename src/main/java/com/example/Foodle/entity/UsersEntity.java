@@ -29,6 +29,7 @@ public class UsersEntity {
     private List<PreferredTimeEntity> preferredTime;
     private List<String> likeWord;
     private List<String> dislikeWord;
+    private String friendCode;
 
     public UsersEntity(String uid, String name, String nickName, String profileImage, List<PreferredTimeEntity> preferredTime, List<String> likeWord, List<String> dislikeWord) {
         this.uid = uid;
@@ -41,5 +42,6 @@ public class UsersEntity {
         this.preferredTime = preferredTime;
         this.likeWord = likeWord;
         this.dislikeWord = dislikeWord;
+        this.friendCode = "";
     }
 }

@@ -50,4 +50,8 @@ public class UsersService {
     public String deleteUser(String uid) {
         return usersDao.deleteUser(uid);
     }
+
+    public String getFriendCode(String uid) throws InterruptedException, ExecutionException {
+        return usersDao.getFriendCode(uid);
+    }   
 }

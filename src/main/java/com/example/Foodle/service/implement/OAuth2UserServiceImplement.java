@@ -49,7 +49,7 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
                     email = (String) kakaoAccount.get("email");
                     profileImage = profile != null ? (String) profile.get("profile_image_url") : null;
                 }
-                usersEntity = new UsersEntity(userId, name, "새로운 사용자", profileImage, "kakao", email, "", null, null, null);
+                usersEntity = new UsersEntity(userId, name, "새로운 사용자", profileImage, "kakao", email, "", null, null, null, usersDao.getFriendCode(userId));
             } else if (oauthClientName.equals("naver")) {
                 Map<String, Object> response = (Map<String, Object>) oAuth2User.getAttributes().get("response");
                 if (response != null) {
@@ -58,9 +58,9 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
                     name = (String) response.get("name");
                     profileImage = (String) response.get("profile_image");
                 }
-                usersEntity = new UsersEntity(userId, name, "새로운 사용자", profileImage, "naver", email, "", null, null, null);
+                usersEntity = new UsersEntity(userId, name, "새로운 사용자", profileImage, "naver", email, "", null, null, null, usersDao.getFriendCode(userId));
             }
-            
+
             usersDao.saveUser(usersEntity);
             
             return new customOAuth2User(userId);

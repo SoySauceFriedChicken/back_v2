@@ -1,10 +1,13 @@
 package com.example.Foodle.dao;
 
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.stereotype.Repository;
@@ -111,6 +114,8 @@ public class UsersDao {
     
     public String saveUser(UsersEntity user) throws InterruptedException, ExecutionException {
         Firestore db = FirestoreClient.getFirestore();
+        String friendCode = generateFriendCode();
+        user.setFriendCode(friendCode);
         if(db.collection(COLLECTION_NAME).whereEqualTo("uid", user.getUid()) != null) {
             // 같은 uid를 가진 사용자가 없을 때만 저장
             if(db.collection(COLLECTION_NAME).whereEqualTo("uid", user.getUid()).get().get().isEmpty()){
@@ -210,4 +215,53 @@ public class UsersDao {
     //     }
     // }
     
+    // 유저의 친구 추가 코드 생성 및 조회
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int CODE_LENGTH = 7;
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    public String generateUniqueFriendCode() throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        String friendCode;
+
+        while (true) {
+            friendCode = generateFriendCode();
+
+            // 해당 친구 코드가 이미 존재하는지 확인
+            var usersQuery = db.collection("Users").whereEqualTo("friendCode", friendCode).get().get();
+            if (usersQuery.isEmpty()) {
+                break;  // 중복된 코드가 없으면 루프를 빠져나감
+            }
+        }
+
+        return friendCode;
+    }
+
+    public String generateFriendCode() {
+        StringBuilder code = new StringBuilder(CODE_LENGTH);
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            code.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
+        }
+        return code.toString();
+    }
+
+    public void saveFriendCodeToUser(String userId) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        String friendCode = generateFriendCode();
+
+
+        // 사용자 정보에 친구 코드 추가
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("friendCode", friendCode);
+
+        db.collection(COLLECTION_NAME).document(userId).update(userData).get();
+    }
+
+    public String getFriendCode(String userId) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        DocumentReference usersRef =  db.collection(COLLECTION_NAME).whereEqualTo("uid", userId).get().get().getDocuments().get(0).getReference();
+        UsersEntity user = usersRef.get().get().toObject(UsersEntity.class);
+
+        return user.getFriendCode();
+    }
 }
