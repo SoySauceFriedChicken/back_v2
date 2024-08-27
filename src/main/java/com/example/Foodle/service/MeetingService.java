@@ -78,12 +78,12 @@ public class MeetingService {
         return meetingDao.deleteMeeting(meetEntity);
     }
 
-    public List<PlaceDto> getPreferredPlaceByPlaceName(int mid, String placeName) throws InterruptedException, ExecutionException, IOException {
-        return meetingDao.getPlaceByPlaceNameAndMid(mid, placeName);
+    public List<PlaceDto> getPreferredPlaceByPlaceName(MeetingDto meeting, String placeName) throws InterruptedException, ExecutionException, IOException {
+        return meetingDao.getPlaceByPlaceNameAndMid(meeting, placeName);
     }
 
-    public List<PlaceDto> getPreferredPlaceByCategory(int mid, String category) throws InterruptedException, ExecutionException, IOException {
-        return meetingDao.getPlaceByCategoryAndMid(mid, category);
+    public List<PlaceDto> getPreferredPlaceByCategory(MeetingDto meeting, String category) throws InterruptedException, ExecutionException, IOException {
+        return meetingDao.getPlaceByCategoryAndMid(meeting, category);
     }
 
 }

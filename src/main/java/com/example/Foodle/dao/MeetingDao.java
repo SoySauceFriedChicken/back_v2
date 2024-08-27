@@ -704,7 +704,7 @@ public class MeetingDao {
     //     }
     // }
 
-    public List<PlaceDto> getPlaceByPlaceNameAndMid(int mid, String placeName) throws ExecutionException, InterruptedException {
+    public List<PlaceDto> getPlaceByPlaceNameAndMid(MeetingDto meeting, String placeName) throws ExecutionException, InterruptedException {
         if (placeName.isEmpty() || placeName.isBlank()) {
             return new ArrayList<>();
         }
@@ -721,10 +721,7 @@ public class MeetingDao {
             }
         }
 
-        // Fetch members' UIDs
-        MeetingDto meetingDto = getMeetingsByMid(mid);
-
-        List<UsersDto> membersUid = meetingDto.getJoiners();
+        List<UsersDto> membersUid = meeting.getJoiners();
         List <String> members = new ArrayList<>();
         for(UsersDto user : membersUid) {
             members.add(user.getUid());
@@ -776,7 +773,7 @@ public class MeetingDao {
         return sortPlacesBySimilarity(places, memberPlaces);
     }
 
-    public List<PlaceDto> getPlaceByCategoryAndMid(int mid, String category) throws ExecutionException, InterruptedException {
+    public List<PlaceDto> getPlaceByCategoryAndMid(MeetingDto meeting, String category) throws ExecutionException, InterruptedException {
         if (category.isBlank() || category.isEmpty()) {
             return new ArrayList<>();
         }
@@ -793,10 +790,7 @@ public class MeetingDao {
             }
         }
 
-        // Fetch members' UIDs
-        MeetingDto meetingDto = getMeetingsByMid(mid);
-
-        List<UsersDto> membersUid = meetingDto.getJoiners();
+        List<UsersDto> membersUid = meeting.getJoiners();
         List <String> members = new ArrayList<>();
         for(UsersDto user : membersUid) {
             members.add(user.getUid());

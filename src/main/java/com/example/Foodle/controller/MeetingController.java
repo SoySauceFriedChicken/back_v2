@@ -391,10 +391,10 @@ public class MeetingController {
     }
 
     // 미팅에 참여중인 참가자들 목록을 가져와서 참가자들이 선호하는 장소 리턴하기
-    @GetMapping("/getPreferredPlacebyPlaceName")
-    public List<PlaceDto> getPreferredPlaceByPlaceName(@RequestParam int mid, @RequestParam String placeName) {
+    @PostMapping("/getPreferredPlacebyPlaceName")
+    public List<PlaceDto> getPreferredPlaceByPlaceName(@RequestBody MeetingDto meeting, @RequestParam String placeName) {
         try {
-            List<PlaceDto> result = meetingService.getPreferredPlaceByPlaceName(mid, placeName);
+            List<PlaceDto> result = meetingService.getPreferredPlaceByPlaceName(meeting, placeName);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -402,8 +402,8 @@ public class MeetingController {
         }
     }
 
-    @GetMapping("/getPreferredPlacebyCategory")
-    public List<PlaceDto> getPreferredPlaceByCategory(@RequestParam int mid, @RequestParam String category) {
+    @PostMapping("/getPreferredPlacebyCategory")
+    public List<PlaceDto> getPreferredPlaceByCategory(@RequestBody MeetingDto mid, @RequestParam String category) {
         // log.info("mid: " + mid + ", category: " + category);
         try {
             // log.info("mid: " + mid + ", category: " + category);
