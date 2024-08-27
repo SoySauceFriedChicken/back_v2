@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Foodle.dto.request.meeting.MeetingDto;
 import com.example.Foodle.dto.request.meeting.NewMeetingDto;
+import com.example.Foodle.dto.request.meeting.SearchPlaceByCategoryWithMeetingDto;
+import com.example.Foodle.dto.request.meeting.SearchPlaceByPlaceNameWithMeetingDto;
 import com.example.Foodle.dto.request.meeting.UpdateMeeingTimeDto;
 import com.example.Foodle.dto.request.meeting.UpdateMeetingDto;
 import com.example.Foodle.dto.request.meetingPlace.MeetingPlaceDto;
@@ -392,9 +394,9 @@ public class MeetingController {
 
     // 미팅에 참여중인 참가자들 목록을 가져와서 참가자들이 선호하는 장소 리턴하기
     @PostMapping("/getPreferredPlacebyPlaceName")
-    public List<PlaceDto> getPreferredPlaceByPlaceName(@RequestBody MeetingDto meeting, @RequestParam String placeName) {
+    public List<PlaceDto> getPreferredPlaceByPlaceName(@RequestBody SearchPlaceByPlaceNameWithMeetingDto entity) {
         try {
-            List<PlaceDto> result = meetingService.getPreferredPlaceByPlaceName(meeting, placeName);
+            List<PlaceDto> result = meetingService.getPreferredPlaceByPlaceName(entity.getMeeting(), entity.getPlaceName());
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -403,11 +405,11 @@ public class MeetingController {
     }
 
     @PostMapping("/getPreferredPlacebyCategory")
-    public List<PlaceDto> getPreferredPlaceByCategory(@RequestBody MeetingDto mid, @RequestParam String category) {
+    public List<PlaceDto> getPreferredPlaceByCategory(@RequestBody SearchPlaceByCategoryWithMeetingDto entity) {
         // log.info("mid: " + mid + ", category: " + category);
         try {
             // log.info("mid: " + mid + ", category: " + category);
-            List<PlaceDto> result = meetingService.getPreferredPlaceByCategory(mid, category);
+            List<PlaceDto> result = meetingService.getPreferredPlaceByCategory(entity.getMeeting(), entity.getCategory());
             return result;
         } catch (Exception e) {
             e.printStackTrace();
