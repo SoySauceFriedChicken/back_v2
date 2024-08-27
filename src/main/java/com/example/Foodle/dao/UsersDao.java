@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.springframework.stereotype.Repository;
 
+import com.example.Foodle.dto.request.friend.FriendDto;
 import com.example.Foodle.dto.request.user.PreferredTimeDto;
 import com.example.Foodle.dto.request.user.UsersDto;
 import com.example.Foodle.entity.PreferredTimeEntity;
@@ -53,8 +54,8 @@ public class UsersDao {
                 PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
                 for(PreferredTimeEntity preferredTime : user.getPreferredTime()) {
                     preferredTimeDto.setDay(preferredTime.getDay());
-                    preferredTimeDto.setStart(convertTimeStringToLocalTime(preferredTime.getStart()));
-                    preferredTimeDto.setEnd(convertTimeStringToLocalTime(preferredTime.getEnd()));
+                    preferredTimeDto.setStart(preferredTime.getStart());
+                    preferredTimeDto.setEnd(preferredTime.getEnd());
                     preferredTimeList.add(preferredTimeDto);
                 }
                 userDto.setPreferredTime(preferredTimeList);
@@ -83,8 +84,8 @@ public class UsersDao {
             }
             for(PreferredTimeEntity preferredTime : user.getPreferredTime()) {
                 preferredTimeDto.setDay(preferredTime.getDay());
-                preferredTimeDto.setStart(convertTimeStringToLocalTime(preferredTime.getStart()));
-                preferredTimeDto.setEnd(convertTimeStringToLocalTime(preferredTime.getEnd()));
+                preferredTimeDto.setStart(preferredTime.getStart());
+                preferredTimeDto.setEnd(preferredTime.getEnd());
                 preferredTimeList.add(preferredTimeDto);
             }
             userDto.setPreferredTime(preferredTimeList);
@@ -141,8 +142,15 @@ public class UsersDao {
 
             if (!documents.isEmpty()) {
                 // Document exists, update it
+
+                // Before updating, get friendCode from the existing document
+                String friendCode = documents.get(0).toObject(UsersEntity.class).getFriendCode();
+                UsersEntity updateUsers = usersDto.toEntity();
+                updateUsers.setFriendCode(friendCode);
+
+                // Update the document
                 DocumentReference docRef = documents.get(0).getReference();
-                ApiFuture<WriteResult> future = docRef.set(usersDto.toEntity(), SetOptions.merge());
+                ApiFuture<WriteResult> future = docRef.set(updateUsers, SetOptions.merge());
                 WriteResult result = future.get();
                 log.info("Update time : " + result.getUpdateTime());
                 return "User updated successfully!";
@@ -153,6 +161,60 @@ public class UsersDao {
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error updating user with uid " + usersDto.getUid(), e);
+            return "error updating user";
+        }
+    }
+
+    public String updateLikeWords(String uid, List<String> likeWords){
+        Firestore db = FirestoreClient.getFirestore();
+        CollectionReference users = db.collection(COLLECTION_NAME);
+        Query query = users.whereEqualTo("uid", uid);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+
+        try {
+            List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+            if (!documents.isEmpty()) {
+                // Document exists, update it
+                DocumentReference docRef = documents.get(0).getReference();
+                ApiFuture<WriteResult> future = docRef.update("likeWord", likeWords);
+                WriteResult result = future.get();
+                log.info("Update time : " + result.getUpdateTime());
+                return "User updated successfully!";
+            } else {
+                // Document does not exist, handle accordingly
+                log.error("Document with uid {} not found.", uid);
+                return "no user found";
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("Error updating user with uid " + uid, e);
+            return "error updating user";
+        }
+    }
+
+    public String updateDislikeWords(String uid, List<String> dislikeWords){
+        Firestore db = FirestoreClient.getFirestore();
+        CollectionReference users = db.collection(COLLECTION_NAME);
+        Query query = users.whereEqualTo("uid", uid);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+
+        try {
+            List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+            if (!documents.isEmpty()) {
+                // Document exists, update it
+                DocumentReference docRef = documents.get(0).getReference();
+                ApiFuture<WriteResult> future = docRef.update("dislikeWord", dislikeWords);
+                WriteResult result = future.get();
+                log.info("Update time : " + result.getUpdateTime());
+                return "User updated successfully!";
+            } else {
+                // Document does not exist, handle accordingly
+                log.error("Document with uid {} not found.", uid);
+                return "no user found";
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("Error updating user with uid " + uid, e);
             return "error updating user";
         }
     }
@@ -175,7 +237,16 @@ public class UsersDao {
                 DocumentReference docRef = documents.get(0).getReference();
                 ApiFuture<WriteResult> future = docRef.delete();
                 WriteResult result = future.get();
-                log.info("Delete time : " + result.getUpdateTime());
+
+                // 유저 친구목록, 미팅 목록, 장소 리스트 삭제
+                FriendDao friendDao = new FriendDao();
+                friendDao.deleteAllFriend(uid);
+                MeetingDao meetingDao = new MeetingDao();
+                meetingDao.deleteUsersAllMeeting(uid);
+                PlaceListDao placeListDao = new PlaceListDao();
+                placeListDao.deleteAllPlaceList(uid);
+
+                // log.info("Delete time : " + result.getUpdateTime());
                 return "User deleted successfully!";
             } else {
                 // Document does not exist, handle accordingly

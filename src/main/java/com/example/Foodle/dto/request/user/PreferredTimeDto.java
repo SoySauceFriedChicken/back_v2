@@ -14,6 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PreferredTimeDto {
     private String day;
-    private LocalTime start;
-    private LocalTime end;
+    private String start;
+    private String end;
 }

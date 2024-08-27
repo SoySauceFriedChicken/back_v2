@@ -181,31 +181,39 @@ public class MeetingDao {
             List<UsersDto> joiners = new ArrayList<>();
 
             for (String memberId : memberIds) {
-                Query userRef = db.collection(USERS_COLLECTION_NAME).whereEqualTo("uid", memberId);
-                ApiFuture<QuerySnapshot> userSnapshotFuture = userRef.get();
-                QuerySnapshot userSnapshot = userSnapshotFuture.get();
+                if(memberId.equals("(알 수 없음)")) {
+                    log.info("Unknown user found");
+                    UsersDto unknownUser = new UsersDto("(알 수 없음)", null, null, null, null, null, null);
+                    joiners.add(unknownUser);
+                }
+                else{
+                    Query userRef = db.collection(USERS_COLLECTION_NAME).whereEqualTo("uid", memberId);
+                    ApiFuture<QuerySnapshot> userSnapshotFuture = userRef.get();
+                    QuerySnapshot userSnapshot = userSnapshotFuture.get();
 
-                if (!userSnapshot.isEmpty()) {
-                    UsersEntity usersEntity = userSnapshot.getDocuments().get(0).toObject(UsersEntity.class);                    
-                    UsersDto userDto = new UsersDto(usersEntity.getUid(), usersEntity.getName(), usersEntity.getNickName(), usersEntity.getProfileImage(), null, usersEntity.getLikeWord(), usersEntity.getDislikeWord());
-                    List<PreferredTimeDto> preferredTimeList = new ArrayList<>();
-                    PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
-                    if(usersEntity.getPreferredTime() != null) {
-                        for(PreferredTimeEntity time : usersEntity.getPreferredTime()) {
-                            preferredTimeDto.setDay(time.getDay());
-                            preferredTimeDto.setStart(convertTimeStringToLocalTime(time.getStart()));
-                            preferredTimeDto.setEnd(convertTimeStringToLocalTime(time.getEnd()));                            preferredTimeList.add(preferredTimeDto);
-                        }
-                        userDto.setPreferredTime(preferredTimeList);
-                        joiners.add(userDto);   
+                    if (!userSnapshot.isEmpty()) {
+                        // uid가 (알 수 없는)인 경우 빈 유저 생성해서 리턴
+                            UsersEntity usersEntity = userSnapshot.getDocuments().get(0).toObject(UsersEntity.class);                    
+                            UsersDto userDto = new UsersDto(usersEntity.getUid(), usersEntity.getName(), usersEntity.getNickName(), usersEntity.getProfileImage(), null, usersEntity.getLikeWord(), usersEntity.getDislikeWord());
+                            List<PreferredTimeDto> preferredTimeList = new ArrayList<>();
+                            PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
+                            if(usersEntity.getPreferredTime() != null) {
+                                for(PreferredTimeEntity time : usersEntity.getPreferredTime()) {
+                                    preferredTimeDto.setDay(time.getDay());
+                                    preferredTimeDto.setStart(time.getStart());
+                                    preferredTimeDto.setEnd(time.getEnd());                            
+                                    preferredTimeList.add(preferredTimeDto);
+                                }
+                                userDto.setPreferredTime(preferredTimeList);
+                                joiners.add(userDto);   
+                            }
+                            else {
+                                // userDto.setPreferredTime(null);
+                                joiners.add(userDto);
+                            }
+                    } else {
+                        log.info("User with uid " + memberId + " not found");
                     }
-                    else {
-                        // userDto.setPreferredTime(null);
-                        joiners.add(userDto);
-                    }
-
-                } else {
-                    log.info("User with uid " + memberId + " not found");
                 }
             }
 
@@ -869,6 +877,28 @@ public class MeetingDao {
                 .orElse(0.0);
     }
     
+    public String deleteUsersAllMeeting(String uid) throws InterruptedException, ExecutionException {
+        Firestore db = FirestoreClient.getFirestore();
+        CollectionReference meetingsRef = db.collection(COLLECTION_NAME);
+
+        try{
+            // uid가 포함된 모든 미팅을 가져옴
+            Query query = meetingsRef.whereArrayContains("member", uid);
+            ApiFuture<QuerySnapshot> querySnapshot = query.get();
+            List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+            for (QueryDocumentSnapshot document : documents) {
+                MeetEntity meetEntity = document.toObject(MeetEntity.class);
+                List<String> members = meetEntity.getMember();
+                // uid를 (알 수 없음)으로 변경
+                members.set(members.indexOf(uid), "(알 수 없음)");
+                meetEntity.setMember(members);
+                document.getReference().set(meetEntity);
+            }
+            return "User deleted from all meetings successfully!";
+        } catch (Exception e) {
+            return "User deleted from all meetings failed!";
+        }
+    }
 
     
 }

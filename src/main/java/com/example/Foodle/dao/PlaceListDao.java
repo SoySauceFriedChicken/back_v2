@@ -174,4 +174,24 @@ public class PlaceListDao {
             return "PlaceList with lid " + placeList.getLid() + " not found";
         }
     }
+
+    public String deleteAllPlaceList(String uid) throws InterruptedException, ExecutionException {
+        Firestore db = FirestoreClient.getFirestore();
+        CollectionReference placeRef = db.collection(COLLECTION_NAME);
+        Query query = placeRef.whereEqualTo("uid", uid);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+        try{
+            if(documents.isEmpty()) {
+                return "No placeLists found";
+            }
+            for (QueryDocumentSnapshot document : documents) {
+                document.getReference().delete();
+            }
+            return "PlaceList deleted successfully";
+        } catch (Exception e) {
+            return "Error deleting placeList";
+        }
+    }
 }

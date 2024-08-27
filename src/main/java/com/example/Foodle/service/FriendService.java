@@ -52,42 +52,46 @@ public class FriendService {
         Firestore db = getFirestore();
 
         // 이미 친구로 등록되어 있는지 확인
-        DocumentReference friendRef1 = db.collection(COLLECTION_NAME)
-                .whereEqualTo("uid", uid)
-                .whereEqualTo("fid", fid)
-                .limit(1)  // Limit to one document (assuming uid, fid combination is unique)
-                .get()
-                .get()
-                .getDocuments()
-                .get(0).getReference();
-        
-        // 이미 친구로 등록되어 있는 경우
-        if (friendRef1 != null) {
-            return;
+        List<QueryDocumentSnapshot> documents = db.collection(COLLECTION_NAME)
+        .whereEqualTo("uid", uid)
+        .whereEqualTo("fid", fid)
+        .limit(1)  // Limit to one document (assuming uid, fid combination is unique)
+        .get()
+        .get()
+        .getDocuments();
+
+        // documents 리스트가 비어 있는지 확인
+        if (documents.isEmpty()) {
+            // DocumentReference friendRef1 = db.collection(COLLECTION_NAME).document();
+            // DocumentReference friendRef2 = db.collection(COLLECTION_NAME).document();
+
+            // UsersDao usersDao = new UsersDao();
+    
+            // FriendDto friendDto1 = new FriendDto(usersDao.findByUid(uid), false);
+            // FriendDto friendDto2 = new FriendDto(usersDao.findByUid(fid), false);
+    
+            // // Create two separate futures for each write operation
+            // ApiFuture<WriteResult> future1 = friendRef1.set(friendDto1);
+            // ApiFuture<WriteResult> future2 = friendRef2.set(friendDto2);
+    
+            // // Wait for the futures to complete
+            // future1.get();
+            // future2.get();
+
+            FriendEntity friendEntity1 = new FriendEntity(uid, false, fid);
+            FriendEntity friendEntity2 = new FriendEntity(fid, false, uid);
+
+            db.collection(COLLECTION_NAME).document().set(friendEntity1); // 자동 생성된 ID를 사용
+            db.collection(COLLECTION_NAME).document().set(friendEntity2); // fid를 사용
+            
+            log.info("Friend created successfully");
+            
+        } else {
+            // 문서가 있을 경우 처리
+            log.info("Friend already exists");
         }
-        DocumentReference friendRef2 = db.collection(COLLECTION_NAME).document();
 
-        UsersDao usersDao = new UsersDao();
-
-        FriendDto friendEntity1 = new FriendDto(usersDao.findByUid(uid), false);
-        FriendDto friendEntity2 = new FriendDto(usersDao.findByUid(fid), false);
-
-        // Create two separate futures for each write operation
-        ApiFuture<WriteResult> future1 = friendRef1.set(friendEntity1);
-        ApiFuture<WriteResult> future2 = friendRef2.set(friendEntity2);
-
-        try {
-            // Wait for both operations to complete
-            WriteResult result1 = future1.get();
-            WriteResult result2 = future2.get();
-
-            // Log the update times (optional)
-            System.out.println("Update time for friendRef1: " + result1.getUpdateTime());
-            System.out.println("Update time for friendRef2: " + result2.getUpdateTime());
-
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+       
     }
 
     public String createFriendByCode(String uid, String code) throws InterruptedException, ExecutionException {

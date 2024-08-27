@@ -147,6 +147,82 @@ public class UsersController {
         }
     }
 
+    @GetMapping("update/likeWord")
+    public ResponseEntity<Map<String, Object>> updateLikeWords(@RequestParam String uid, @RequestParam List<String> likeWord) {
+        Map<String, Object> response = new HashMap<>();
+        try{
+            String result = usersService.updateLikeWords(uid, likeWord);
+            if(result.equals("User updated successfully!")){
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if ("no user found".equals(result)) {
+                response.put("success", false);
+                response.put("error", result);
+                response.put("message", "User not found");
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("success", false);
+                response.put("error", result);
+                response.put("message", "Error updating user");
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error updating user");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("update/dislikeWord")
+    public ResponseEntity<Map<String, Object>> updateDislikeWords(@RequestParam String uid, @RequestParam List<String> dislikeWord) {
+        Map<String, Object> response = new HashMap<>();
+        try{
+            String result = usersService.updateDislikeWords(uid, dislikeWord);
+            if(result.equals("User updated successfully!")){
+                response.put("success", true);
+                response.put("error", null);
+                response.put("message", result);
+                response.put("status", HttpStatus.OK.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if ("no user found".equals(result)) {
+                response.put("success", false);
+                response.put("error", result);
+                response.put("message", "User not found");
+                response.put("status", HttpStatus.NOT_FOUND.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else {
+                response.put("success", false);
+                response.put("error", result);
+                response.put("message", "Error updating user");
+                response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.put("data", new HashMap<>());
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            response.put("message", "Error updating user");
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("data", new HashMap<>());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Object>> deleteUser(@RequestParam String uid) {
         Map<String, Object> response = new HashMap<>();
@@ -203,5 +279,7 @@ public class UsersController {
     // public String loginFailure() {
     //     return "loginFailure";
     // }
+
+
 }
 

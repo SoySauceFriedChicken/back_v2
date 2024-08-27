@@ -44,61 +44,61 @@ public class FriendDao {
     }
 
     public String createFriendByCode(String uid, String code) throws ExecutionException, InterruptedException {
-        Firestore db = getFirestore();
+    Firestore db = getFirestore();
+
+    // Query to find the user with the given friend code
+    CollectionReference UsersRef = db.collection(USERS_COLLECTION_NAME);
+    Query usersQuery = UsersRef.whereEqualTo("friendCode", code);
+    ApiFuture<QuerySnapshot> usersQuerySnapshot = usersQuery.get();
+    List<QueryDocumentSnapshot> usersDocuments = usersQuerySnapshot.get().getDocuments();
     
-        // Query to find the user with the given friend code
-        CollectionReference UsersRef = db.collection(USERS_COLLECTION_NAME);
-        Query usersQuery = UsersRef.whereEqualTo("friendCode", code);
-        ApiFuture<QuerySnapshot> usersQuerySnapshot = usersQuery.get();
-        List<QueryDocumentSnapshot> usersDocuments = usersQuerySnapshot.get().getDocuments();
-        
-        if (usersDocuments.isEmpty()) {
-            return "User not found with the provided friend code";
-        }
-        
-        UsersEntity user = usersDocuments.get(0).toObject(UsersEntity.class);
-    
-        // Check if the friendship already exists
-        QuerySnapshot querySnapshot = db.collection(COLLECTION_NAME)
-            .whereEqualTo("uid", uid)
-            .whereEqualTo("fid", user.getUid())
-            .limit(1)  // Limit to one document (assuming uid, fid combination is unique)
-            .get()
-            .get();
-    
-        // If a document exists, the users are already friends
-        if (!querySnapshot.isEmpty()) {
-            return "Already friend";
-        }
-    
-        // Create new friend documents if they are not already friends
-        DocumentReference friendRef1 = db.collection(COLLECTION_NAME).document();
-        DocumentReference friendRef2 = db.collection(COLLECTION_NAME).document();
-    
-        UsersDao usersDao = new UsersDao();
-        FriendEntity friendEntity1 = new FriendEntity(uid,false, user.getUid());
-        FriendEntity friendEntity2 = new FriendEntity(user.getUid(), false, uid);
-    
-        // Write the friend entities to the Firestore
-        ApiFuture<WriteResult> future1 = friendRef1.set(friendEntity1);
-        ApiFuture<WriteResult> future2 = friendRef2.set(friendEntity2);
-    
-        try {
-            // Wait for both operations to complete
-            WriteResult result1 = future1.get();
-            WriteResult result2 = future2.get();
-    
-            // Log the update times (optional)
-            System.out.println("Update time for friendRef1: " + result1.getUpdateTime());
-            System.out.println("Update time for friendRef2: " + result2.getUpdateTime());
-    
-            return "Friend added Successfully";
-    
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return "Error while adding friend";
-        }
+    // Check if any user was found with the provided friend code
+    if (usersDocuments.isEmpty()) {
+        return "User not found with the provided friend code";
     }
+
+    // At this point, we know the list is not empty
+    UsersEntity user = usersDocuments.get(0).toObject(UsersEntity.class);
+
+    // Check if the friendship already exists
+    Query querySnapshot = db.collection(COLLECTION_NAME)
+        .whereEqualTo("uid", uid)
+        .whereEqualTo("fid", user.getUid());
+    ApiFuture<QuerySnapshot> query = querySnapshot.get();
+    List<QueryDocumentSnapshot> documents = query.get().getDocuments();
+    if (!documents.isEmpty()) {
+        return "Friend already exists";
+    }
+
+    // Create new friend documents if they are not already friends
+    DocumentReference friendRef1 = db.collection(COLLECTION_NAME).document();
+    DocumentReference friendRef2 = db.collection(COLLECTION_NAME).document();
+
+    UsersDao usersDao = new UsersDao();
+    FriendEntity friendEntity1 = new FriendEntity(uid, false, user.getUid());
+    FriendEntity friendEntity2 = new FriendEntity(user.getUid(), false, uid);
+
+    // Write the friend entities to the Firestore
+    ApiFuture<WriteResult> future1 = friendRef1.set(friendEntity1);
+    ApiFuture<WriteResult> future2 = friendRef2.set(friendEntity2);
+
+    try {
+        // Wait for both operations to complete
+        WriteResult result1 = future1.get();
+        WriteResult result2 = future2.get();
+
+        // Log the update times (optional)
+        System.out.println("Update time for friendRef1: " + result1.getUpdateTime());
+        System.out.println("Update time for friendRef2: " + result2.getUpdateTime());
+
+        return "Friend added successfully";
+
+    } catch (InterruptedException | ExecutionException e) {
+        e.printStackTrace();
+        return "Error while adding friend";
+    }
+}
+
     
 
     public List<FriendDto> getFriendsByUid(String uid) throws ExecutionException, InterruptedException {
@@ -130,8 +130,8 @@ public class FriendDao {
                     if(usersEntity.getPreferredTime() != null) {
                         for(PreferredTimeEntity preferredTime : usersEntity.getPreferredTime()) {
                             preferredTimeDto.setDay(preferredTime.getDay());
-                            preferredTimeDto.setStart(convertTimeStringToLocalTime(preferredTime.getStart()));
-                            preferredTimeDto.setEnd(convertTimeStringToLocalTime(preferredTime.getEnd()));
+                            preferredTimeDto.setStart(preferredTime.getStart());
+                            preferredTimeDto.setEnd(preferredTime.getEnd());
                             preferredTimeList.add(preferredTimeDto);
                         }
                         userDto.setPreferredTime(preferredTimeList);
@@ -147,5 +147,34 @@ public class FriendDao {
         }
         friendsWithUserDetails.sort((f1, f2) -> f1.getUser().getUid().compareTo(f2.getUser().getUid()));
         return friendsWithUserDetails;
+    }
+
+    // 친구 삭제
+    public String deleteAllFriend(String uid) throws InterruptedException, ExecutionException {
+        Firestore db = getFirestore();
+        CollectionReference friendsRef = db.collection(COLLECTION_NAME);
+        Query query = friendsRef.whereEqualTo("uid", uid);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+        Query query2 = friendsRef.whereEqualTo("fid", uid);
+        ApiFuture<QuerySnapshot> querySnapshot2 = query2.get();
+        List<QueryDocumentSnapshot> documents2 = querySnapshot2.get().getDocuments();
+
+        // try catch로 감싸기
+        try{
+            if(documents.isEmpty()) {
+                return "No friensds found";
+            }
+            for (QueryDocumentSnapshot document : documents) {
+                document.getReference().delete();
+            }
+            for (QueryDocumentSnapshot document : documents2) {
+                document.getReference().delete();
+            }
+            return "Friend deleted successfully";
+        } catch (Exception e) {
+            return "Error while deleting friends";
+        }
     }
 }

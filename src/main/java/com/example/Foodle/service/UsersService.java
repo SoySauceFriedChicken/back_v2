@@ -46,6 +46,14 @@ public class UsersService {
     public String updateUser(UsersDto user) {
         return usersDao.updateUser(user);
     }
+
+    public String updateLikeWords(String uid, List<String> likeWords) {
+        return usersDao.updateLikeWords(uid, likeWords);
+    }
+
+    public String updateDislikeWords(String uid, List<String> dislikeWords) {
+        return usersDao.updateDislikeWords(uid, dislikeWords);
+    }
     
     public String deleteUser(String uid) {
         return usersDao.deleteUser(uid);
