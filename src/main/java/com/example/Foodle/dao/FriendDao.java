@@ -91,7 +91,7 @@ public class FriendDao {
         System.out.println("Update time for friendRef1: " + result1.getUpdateTime());
         System.out.println("Update time for friendRef2: " + result2.getUpdateTime());
 
-        return "Friend added successfully";
+        return "Friend added Successfully";
 
     } catch (InterruptedException | ExecutionException e) {
         e.printStackTrace();
