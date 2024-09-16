@@ -196,9 +196,10 @@ public class MeetingDao {
                             UsersEntity usersEntity = userSnapshot.getDocuments().get(0).toObject(UsersEntity.class);                    
                             UsersDto userDto = new UsersDto(usersEntity.getUid(), usersEntity.getName(), usersEntity.getNickName(), usersEntity.getProfileImage(), null, usersEntity.getLikeWord(), usersEntity.getDislikeWord());
                             List<PreferredTimeDto> preferredTimeList = new ArrayList<>();
-                            PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
+                            
                             if(usersEntity.getPreferredTime() != null) {
                                 for(PreferredTimeEntity time : usersEntity.getPreferredTime()) {
+                                    PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
                                     preferredTimeDto.setDay(time.getDay());
                                     preferredTimeDto.setStart(time.getStart());
                                     preferredTimeDto.setEnd(time.getEnd());                            

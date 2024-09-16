@@ -51,8 +51,8 @@ public class UsersDao {
             } else{
                 UsersDto userDto = new UsersDto(user.getUid(), user.getName(), user.getNickName(), user.getProfileImage(), null, user.getLikeWord(), user.getDislikeWord());
                 List<PreferredTimeDto> preferredTimeList = new ArrayList<>();
-                PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
                 for(PreferredTimeEntity preferredTime : user.getPreferredTime()) {
+                    PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
                     preferredTimeDto.setDay(preferredTime.getDay());
                     preferredTimeDto.setStart(preferredTime.getStart());
                     preferredTimeDto.setEnd(preferredTime.getEnd());

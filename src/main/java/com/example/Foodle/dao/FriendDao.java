@@ -126,9 +126,10 @@ public class FriendDao {
 
                     UsersDto userDto = new UsersDto(usersEntity.getUid(), usersEntity.getName(), usersEntity.getNickName(), usersEntity.getProfileImage(), null, usersEntity.getLikeWord(), usersEntity.getDislikeWord());
                     List<PreferredTimeDto> preferredTimeList = new ArrayList<>();
-                    PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
+                    
                     if(usersEntity.getPreferredTime() != null) {
                         for(PreferredTimeEntity preferredTime : usersEntity.getPreferredTime()) {
+                            PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
                             preferredTimeDto.setDay(preferredTime.getDay());
                             preferredTimeDto.setStart(preferredTime.getStart());
                             preferredTimeDto.setEnd(preferredTime.getEnd());
