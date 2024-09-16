@@ -78,11 +78,12 @@ public class UsersDao {
             UsersEntity user = documents.get(0).toObject(UsersEntity.class);
             UsersDto userDto = new UsersDto(user.getUid(), user.getName(), user.getNickName(), user.getProfileImage(), null, user.getLikeWord(), user.getDislikeWord());
             List<PreferredTimeDto> preferredTimeList = new ArrayList<>();
-            PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
+            
             if(user.getPreferredTime() == null) {
                 return userDto;
             }
             for(PreferredTimeEntity preferredTime : user.getPreferredTime()) {
+                PreferredTimeDto preferredTimeDto = new PreferredTimeDto();
                 preferredTimeDto.setDay(preferredTime.getDay());
                 preferredTimeDto.setStart(preferredTime.getStart());
                 preferredTimeDto.setEnd(preferredTime.getEnd());
@@ -128,29 +129,32 @@ public class UsersDao {
         // log.info("User already exists!");
         return "User already exists!";
     }
-    
+
     public String updateUser(UsersDto usersDto) {
         Firestore db = FirestoreClient.getFirestore();
-
+    
         // Find document based on uid
         CollectionReference users = db.collection(COLLECTION_NAME);
         Query query = users.whereEqualTo("uid", usersDto.getUid());
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
-
+    
         try {
             List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
-
+    
             if (!documents.isEmpty()) {
                 // Document exists, update it
-
+    
                 // Before updating, get friendCode from the existing document
                 String friendCode = documents.get(0).toObject(UsersEntity.class).getFriendCode();
                 UsersEntity updateUsers = usersDto.toEntity();
                 updateUsers.setFriendCode(friendCode);
-
+    
+                // Log the updateUsers entity before updating (디버깅 용도로)
+                log.info("Updating user entity: " + updateUsers);
+    
                 // Update the document
                 DocumentReference docRef = documents.get(0).getReference();
-                ApiFuture<WriteResult> future = docRef.set(updateUsers, SetOptions.merge());
+                ApiFuture<WriteResult> future = docRef.set(updateUsers);
                 WriteResult result = future.get();
                 log.info("Update time : " + result.getUpdateTime());
                 return "User updated successfully!";
@@ -164,6 +168,7 @@ public class UsersDao {
             return "error updating user";
         }
     }
+    
 
     public String updateLikeWords(String uid, List<String> likeWords){
         Firestore db = FirestoreClient.getFirestore();

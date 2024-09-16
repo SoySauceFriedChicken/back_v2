@@ -34,19 +34,28 @@ public class UsersDto {
     private List<String> dislikeWord;
 
     public UsersEntity toEntity() {
-        //PreferredTimeDto를 PreferredTimeEntity로 변환
         if(preferredTime == null) {
             return new UsersEntity(uid, name, nickName, profileImage, null, likeWord, dislikeWord);
         }
-
+    
         List<PreferredTimeEntity> preferredTimeEntities = new ArrayList<>();
-        PreferredTimeEntity preferredTimeEntity = new PreferredTimeEntity();
-        for(PreferredTimeDto preferredTimeDto : preferredTime) {
+        
+        // 각 preferredTimeDto에 대해 새로운 PreferredTimeEntity 생성
+        for (PreferredTimeDto preferredTimeDto : preferredTime) {
+            PreferredTimeEntity preferredTimeEntity = new PreferredTimeEntity(); // 새 객체 생성
             preferredTimeEntity.setDay(preferredTimeDto.getDay());
-            preferredTimeEntity.setStart(preferredTimeDto.getStart().toString());
-            preferredTimeEntity.setEnd(preferredTimeDto.getEnd().toString());
+            preferredTimeEntity.setStart(preferredTimeDto.getStart());
+            preferredTimeEntity.setEnd(preferredTimeDto.getEnd());
+            
+            // 로그 출력
+            System.out.println("Adding preferred time: Day=" + preferredTimeDto.getDay() + 
+                    ", Start=" + preferredTimeDto.getStart() + 
+                    ", End=" + preferredTimeDto.getEnd());
+
             preferredTimeEntities.add(preferredTimeEntity);
         }
+    
         return new UsersEntity(uid, name, nickName, profileImage, preferredTimeEntities, likeWord, dislikeWord);
     }
+    
 }
