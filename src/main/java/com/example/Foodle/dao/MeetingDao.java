@@ -734,12 +734,15 @@ public class MeetingDao {
 
         for(String uid : members) {
             UsersDto user = new UsersDao().findByUid(uid);
-            if(user.getLikeWord() != null) {
-                UsersLikeWords.addAll(user.getLikeWord());
+            if(user != null) {
+                if(user.getLikeWord() != null) {
+                    UsersLikeWords.addAll(user.getLikeWord());
+                }
+                if(user.getDislikeWord() != null) {
+                    UsersDislikeWords.addAll(user.getDislikeWord());
+                }
             }
-            if(user.getDislikeWord() != null) {
-                UsersDislikeWords.addAll(user.getDislikeWord());
-            }
+            
         }
 
         // 'places'의 복사본 생성
